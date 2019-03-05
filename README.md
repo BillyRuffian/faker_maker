@@ -164,7 +164,7 @@ end
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/faker_maker.
+Bug reports and pull requests are welcome on GitHub at https://github.com/BillyRuffian/faker_maker.
 
 ## License
 
