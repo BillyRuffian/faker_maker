@@ -1,6 +1,5 @@
 module FakerMaker
   class DefinitionProxy
-    attr_reader :klass
 
     def initialize factory
       @factory = factory
