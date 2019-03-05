@@ -1,6 +1,6 @@
 module FakerMaker
   class Factory
-    attr_reader :name, :attributes
+    attr_reader :name, :attributes, :class_name, :parent_class, :parent
 
     def initialize name, options={}
       assert_valid_options options
@@ -8,6 +8,12 @@ module FakerMaker
       @class_name = (options[:class] || @name).to_s.camelcase
       @attributes = []
       @klass = nil
+      @parent = options[:parent]
+      @parent_class = if @parent 
+        Object.const_get( FakerMaker[@parent].class_name )
+      else
+         Object
+      end
     end
 
     def attach_attribute attribute 
@@ -16,10 +22,36 @@ module FakerMaker
 
     def build
       instance = instantiate
+      populate_instance instance
+      yield self if block_given?
+      instance
+    end
+
+    def assemble
+      if @klass.nil?
+        @klass = Class.new @parent_class
+        Object.const_set @class_name, @klass
+        attach_attributes_to_class
+      end
+      @klass
+    end
+
+    def to_json
+      build.to_json
+    end
+
+    def parent?
+      ! @parent.nil?
+    end
+
+    protected 
+
+    def populate_instance instance
+      FakerMaker[parent].populate_instance instance if self.parent?
       @attributes.each do |attr|
         value = nil
         
-        if attr.is_array?
+        if attr.array?
           value = Array.new.tap{ |a| attr.cardinality.times{ a << attr.block.call } }
         else
           value = attr.block.call
@@ -27,24 +59,13 @@ module FakerMaker
 
         instance.send "#{attr.name}=", value
       end
-      instance
     end
 
     private
 
     def instantiate
-      assemble_class.new
+      assemble.new
     end
-
-    def assemble_class
-      if @klass.nil?
-        @klass = Class.new
-        Object.const_set @class_name, klass
-        attach_attributes_to_class
-      end
-      @klass
-    end
-    alias_method :klass, :assemble_class
 
     def attach_attributes_to_class
       @attributes.each do |attr|
@@ -53,7 +74,7 @@ module FakerMaker
     end
 
     def assert_valid_options options
-      options.assert_valid_keys :class
+      options.assert_valid_keys :class, :parent
     end
   end
 end

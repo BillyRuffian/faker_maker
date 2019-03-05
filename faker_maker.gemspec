@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = "faker_maker"
   spec.version       = FakerMaker::VERSION
   spec.authors       = ["Nigel Brookes-Thomas"]
-  spec.email         = ["nigel.brookes-thomas@dvla.gov.uk"]
+  spec.email         = ["nigel@brookes-thomas.co.uk"]
 
   spec.summary       = %q{FakerMaker bakes fakes.}
   #spec.description   = %q{TODO: Write a longer description or delete this line.}
@@ -38,9 +38,10 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "activesupport", ">= 5.2"
 
-  spec.add_development_dependency "bundler", "~> 1.17"
+  spec.add_development_dependency "bundler", "~> 2.0"
   spec.add_development_dependency "rake", "~> 10.0"
-  spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "faker", ">= 1.9"
+  spec.add_development_dependency "rspec", ">= 3.8"
+  spec.add_development_dependency "simplecov", ">= 0.16"
   spec.add_development_dependency "pry"
 end

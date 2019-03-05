@@ -7,7 +7,6 @@ require 'faker_maker/base'
 require 'faker_maker/factory'
 require 'faker_maker/definition_proxy'
 require 'faker_maker/attribute'
-require 'active_support/core_ext/object/instance_variables'
 
 module FakerMaker
   extend FakerMaker::Base
@@ -18,6 +17,7 @@ module FakerMaker
   module_function
 
   def register_factory factory
+    factory.assemble
     factories[factory.name] = factory
   end
 
@@ -25,8 +25,16 @@ module FakerMaker
     @factories ||= {}
   end
 
+  def build name
+    factory = factories[name]
+    raise "No such factory '#{name}'" if factory.nil?
+    factory.build
+  end
+
   def [] name
     factories[name]
   end
 
 end
+
+FM = FakerMaker

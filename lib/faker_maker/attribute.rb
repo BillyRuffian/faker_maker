@@ -10,8 +10,8 @@ module FakerMaker
       @array = options[:array] == true 
     end
 
-    def is_array?
-      is_forced_array? || @array
+    def array?
+      forced_array? || @array
     end
 
     def cardinality
@@ -24,7 +24,7 @@ module FakerMaker
 
     private 
 
-    def is_forced_array?
+    def forced_array?
       @cardinality.is_a?( Range ) || @cardinality > 1
     end
 
