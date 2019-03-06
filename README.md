@@ -123,6 +123,28 @@ FakerMaker.factory :basket do
 end
 ```
 
+JSON keys are often have a different stylistic convention than Ruby's snake-case so you can override the attribute's name when is come to generating JSON:
+
+```ruby
+FakerMaker.factory :item do
+  name( json: 'productName' ) { Faker::Commerce.product_name }
+  price( json: 'ticketPrice' ) { Faker::Commerce.price }
+end
+```
+
+so in Ruby you would access the attribute using the attribute name as in:
+
+```ruby
+item = FM[:item].build
+puts item
+```
+
+but `item.to_json` would produce:
+
+```javascript
+{"productName":"Enormous Silk Pants","ticketPrice":55.35}
+```
+
 ### Building instances
 
 Instances are Plain Ol' Ruby Objects and the attributes are attached with getters and setters with their values assigned to the value return from their block at build time. 
