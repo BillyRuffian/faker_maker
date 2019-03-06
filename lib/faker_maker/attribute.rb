@@ -1,12 +1,13 @@
 module FakerMaker
   class Attribute
-    attr_reader :name, :block
+    attr_reader :name, :block, :translation
 
     def initialize name, options={}, block
       assert_valid_options options
       @name = name
       @block = block
       @cardinality = options[:has] || 1
+      @translation = options[:json]
       @array = options[:array] == true 
     end
 
@@ -22,6 +23,10 @@ module FakerMaker
       end
     end
 
+    def translation?
+      ! @translation.blank?
+    end
+
     private 
 
     def forced_array?
@@ -29,7 +34,7 @@ module FakerMaker
     end
 
     def assert_valid_options options
-      options.assert_valid_keys :has, :array
+      options.assert_valid_keys :has, :array, :json
     end
 
   end
