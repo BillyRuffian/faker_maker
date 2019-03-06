@@ -32,6 +32,7 @@ module FakerMaker
         @klass = Class.new @parent_class
         Object.const_set @class_name, @klass
         attach_attributes_to_class
+        attach_json_overrides_to_class
       end
       @klass
     end
@@ -42,6 +43,18 @@ module FakerMaker
 
     def parent?
       ! @parent.nil?
+    end
+
+    def json_key_map
+      unless @json_key_map
+        @json_key_map = {}.with_indifferent_access
+        @json_key_map.merge!( FakerMaker[parent].json_key_map ) if parent?
+        attributes.each_with_object( @json_key_map ) do |attr, map|
+          key = attr.translation? ? attr.translation : attr.name
+          map[attr.name] = key
+        end
+      end
+      @json_key_map
     end
 
     protected 
@@ -59,6 +72,7 @@ module FakerMaker
 
         instance.send "#{attr.name}=", value
       end
+      instance.instance_variable_set( :@fm_factory, self )
     end
 
     private
@@ -70,6 +84,13 @@ module FakerMaker
     def attach_attributes_to_class
       @attributes.each do |attr|
         @klass.send( :attr_accessor, attr.name )
+      end
+      @klass.send( :attr_reader, :fm_factory )
+    end
+
+    def attach_json_overrides_to_class
+      @klass.define_method :as_json do |options={}|
+        super( options.merge( except: 'fm_factory' ) ).transform_keys{ |key| @fm_factory.json_key_map[key] || key }
       end
     end
 

@@ -70,6 +70,16 @@ RSpec.describe FakerMaker::Factory do
     expect( factory.to_json ).to be_a String
   end
 
+  it 'generates JSON and translates keys' do
+    factory = FakerMaker::Factory.new( :f )
+    attr = FakerMaker::Attribute.new( :sample, {json: 'jsonSample'}, Proc.new{ 'JSON' } )
+    factory.attach_attribute( attr )
+    FakerMaker.register_factory( factory )
+
+    expect( factory.to_json ).to include 'jsonSample' 
+    expect( factory.to_json ).not_to include 'sample' 
+  end
+
   it 'builds objects with arrays of attributes' do
     factory = FakerMaker::Factory.new( :e )
     attr = FakerMaker::Attribute.new( :sample, {has: 2}, Proc.new{ 'sample' } )

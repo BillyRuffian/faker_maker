@@ -10,6 +10,12 @@ RSpec.describe FakerMaker::Attribute do
     expect( attr.block ).to be_a Proc
   end
 
+  it 'can have a JSON alias' do
+    attr = FakerMaker::Attribute.new( :my_name, {json: 'jsonString'}, Proc.new{ 'block' } )
+    expect( attr.translation? ).to be true
+    expect( attr.translation ).to eq 'jsonString'
+  end
+
   it 'allows cardinality > 1' do
     attr = FakerMaker::Attribute.new( :my_name, {has: 10}, Proc.new{ 'block' } )
     expect( attr.cardinality ).to be 10
