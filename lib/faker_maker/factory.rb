@@ -23,7 +23,7 @@ module FakerMaker
     def build
       instance = instantiate
       populate_instance instance
-      yield self if block_given?
+      yield instance if block_given?
       instance
     end
 
