@@ -12,6 +12,7 @@ module FakerMaker
   extend FakerMaker::Base
 
   class Error < StandardError; end
+  class NoSuchFactoryError < StandardError; end
   # Your code goes here...
 
   module_function
@@ -25,13 +26,16 @@ module FakerMaker
     @factories ||= {}
   end
 
-  def build name
-    factory = factories[name]
-    raise "No such factory '#{name}'" if factory.nil?
-    factory.build
+  def build name    
+    factory( name ).build
   end
 
   def [] name
+    factory name
+  end
+  
+  def factory name
+    raise NoSuchFactoryError, "No such factory '#{name}'" if factories[name].nil?
     factories[name]
   end
 
