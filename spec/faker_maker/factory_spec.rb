@@ -59,6 +59,19 @@ RSpec.describe FakerMaker::Factory do
 
     expect( factory.build.sample ).to eq 'sample'
   end
+  
+  it 'allows attribute overrides' do
+    factory = FakerMaker::Factory.new( :overrides )
+    attr1 = FakerMaker::Attribute.new( :first, {}, Proc.new{ 'sample' } )
+    attr2 = FakerMaker::Attribute.new( :second, {}, Proc.new{ 'value' } )
+    factory.attach_attribute( attr1 )
+    factory.attach_attribute( attr2 )
+    FakerMaker.register_factory( factory )
+    
+    sample = factory.build( second: 'overridden' )
+    expect( sample.first ).to eq 'sample'
+    expect( sample.second ).to eq 'overridden'
+  end
 
   it 'generates JSON' do
     factory = FakerMaker::Factory.new( :d )

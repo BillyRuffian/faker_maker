@@ -20,9 +20,9 @@ module FakerMaker
       @attributes << attribute 
     end
 
-    def build
+    def build attributes={}
       instance = instantiate
-      populate_instance instance
+      populate_instance instance, attributes
       yield instance if block_given?
       instance
     end
@@ -59,12 +59,19 @@ module FakerMaker
 
     protected 
 
-    def populate_instance instance
+    def populate_instance instance, attr_override_values
+      if ! ( unknown_attrs = attr_override_values.keys - @attributes.map( &:name ) ).empty?
+        raise FakerMaker::NoSuchAttributeError, 
+          "Can't build an instance of '#{class_name}' setting '#{unknown_attrs.join( ', ' )}', no such attribute(s)"
+      end
+    
       FakerMaker[parent].populate_instance instance if self.parent?
       @attributes.each do |attr|
         value = nil
         
-        if attr.array?
+        if ! attr_override_values[attr.name].nil?
+          value = attr_override_values[attr.name]
+        elsif attr.array?
           value = Array.new.tap{ |a| attr.cardinality.times{ a << attr.block.call } }
         else
           value = attr.block.call

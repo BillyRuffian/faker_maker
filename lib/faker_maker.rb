@@ -13,6 +13,7 @@ module FakerMaker
 
   class Error < StandardError; end
   class NoSuchFactoryError < StandardError; end
+  class NoSuchAttributeError < StandardError; end
   # Your code goes here...
 
   module_function
@@ -27,14 +28,14 @@ module FakerMaker
   end
 
   def build name    
-    factory( name ).build
+    find_factory( name ).build
   end
 
   def [] name
-    factory name
+    find_factory name
   end
   
-  def factory name
+  def find_factory name
     raise NoSuchFactoryError, "No such factory '#{name}'" if factories[name].nil?
     factories[name]
   end
