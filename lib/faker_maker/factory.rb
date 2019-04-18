@@ -16,7 +16,7 @@ module FakerMaker
       end
     end
 
-    def attach_attribute attribute 
+    def attach_attribute attribute
       @attributes << attribute 
     end
 

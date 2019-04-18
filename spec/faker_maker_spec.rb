@@ -12,4 +12,8 @@ RSpec.describe FakerMaker do
   it 'builds objects from a factory' do
     expect( FakerMaker.build( :placeholder ) ).to be_a Placeholder
   end
+  
+  it 'raises an error if the factory doesn\'t exist' do
+    expect{ FakerMaker[ :'non existent factory' ] }.to raise_error( FakerMaker::NoSuchFactoryError )
+  end
 end
