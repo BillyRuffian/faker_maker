@@ -155,7 +155,7 @@ result = FakerMaker[:item].build( name: 'Electric Blanket' ) do |i|
 end
 ```
 
-then the value of `i.name` is 'Electric Sheep'.
+then the value of `result.name` is 'Electric Sheep'.
 
 Beware when overriding values in this way: there is no type checking. You will get an exception if you try to set a value to an attribute that doesn't exist but you won't get one if you assign, say, an array of values where you would otherwise have a string and vice versa.
 
