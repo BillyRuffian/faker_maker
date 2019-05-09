@@ -1,5 +1,16 @@
 Layout/SpaceInsideParens:
   Enabled: false
-  
+
 Metrics/LineLength:
   Max: 120
+
+Metrics/ModuleLength:
+  Exclude:
+    - "**/*_spec.rb"
+
+Metrics/BlockLength:
+  Exclude:
+    - "**/*_spec.rb"
+
+Layout/TrailingWhitespace:
+  Enabled: false

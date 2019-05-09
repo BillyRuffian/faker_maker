@@ -1,6 +1,4 @@
 RSpec.describe FakerMaker::Factory do
-
-
   it 'has a name' do
     factory = FakerMaker::Factory.new( :user )
     FakerMaker.register_factory( factory )
@@ -15,8 +13,8 @@ RSpec.describe FakerMaker::Factory do
 
   it 'returns attributes' do
     factory = FakerMaker::Factory.new( :post )
-    attributes = [FakerMaker::Attribute.new( :date, {} ), FakerMaker::Attribute.new( :title, {} )]
-    attributes.each{ |a| factory.attach_attribute( a ) }
+    attributes = [FakerMaker::Attribute.new( :date, nil ), FakerMaker::Attribute.new( :title, nil ) ]
+    attributes.each { |a| factory.attach_attribute( a ) }
     FakerMaker.register_factory( factory )
     expect( factory.attributes).to eq attributes
   end
@@ -34,13 +32,13 @@ RSpec.describe FakerMaker::Factory do
 
   it 'respects the class hierarchy' do
     parent = FakerMaker::Factory.new( :parent )
-    parent_attributes = [FakerMaker::Attribute.new( :date, {} ), FakerMaker::Attribute.new( :title, {} )]
-    parent_attributes.each{ |a| parent.attach_attribute( a ) }
+    parent_attributes = [FakerMaker::Attribute.new( :date ), FakerMaker::Attribute.new( :title )]
+    parent_attributes.each { |a| parent.attach_attribute( a ) }
     FakerMaker.register_factory( parent )
 
     child = FakerMaker::Factory.new( :child, parent: :parent )
-    child_attributes = [FakerMaker::Attribute.new( :author, {} ), FakerMaker::Attribute.new( :content, {} )]
-    child_attributes.each{ |a| child.attach_attribute( a ) }
+    child_attributes = [FakerMaker::Attribute.new( :author ), FakerMaker::Attribute.new( :content )]
+    child_attributes.each { |a| child.attach_attribute( a ) }
     FakerMaker.register_factory( child )
 
     fake = Child.new
@@ -53,7 +51,7 @@ RSpec.describe FakerMaker::Factory do
 
   it 'builds populated objects' do
     factory = FakerMaker::Factory.new( :c )
-    attr = FakerMaker::Attribute.new( :sample, {}, Proc.new{ 'sample' } )
+    attr = FakerMaker::Attribute.new( :sample, proc { 'sample' } )
     factory.attach_attribute( attr )
     FakerMaker.register_factory( factory )
 
@@ -62,8 +60,8 @@ RSpec.describe FakerMaker::Factory do
   
   it 'allows attribute overrides' do
     factory = FakerMaker::Factory.new( :overrides )
-    attr1 = FakerMaker::Attribute.new( :first, {}, Proc.new{ 'sample' } )
-    attr2 = FakerMaker::Attribute.new( :second, {}, Proc.new{ 'value' } )
+    attr1 = FakerMaker::Attribute.new( :first, proc { 'sample' } )
+    attr2 = FakerMaker::Attribute.new( :second, proc { 'value' } )
     factory.attach_attribute( attr1 )
     factory.attach_attribute( attr2 )
     FakerMaker.register_factory( factory )
@@ -75,7 +73,7 @@ RSpec.describe FakerMaker::Factory do
 
   it 'generates JSON' do
     factory = FakerMaker::Factory.new( :d )
-    attr = FakerMaker::Attribute.new( :sample, {}, Proc.new{ 'sample' } )
+    attr = FakerMaker::Attribute.new( :sample, proc { 'sample' } )
     factory.attach_attribute( attr )
     FakerMaker.register_factory( factory )
 
@@ -85,7 +83,7 @@ RSpec.describe FakerMaker::Factory do
 
   it 'generates JSON and translates keys' do
     factory = FakerMaker::Factory.new( :f )
-    attr = FakerMaker::Attribute.new( :sample, {json: 'jsonSample'}, Proc.new{ 'JSON' } )
+    attr = FakerMaker::Attribute.new( :sample, proc { 'JSON' }, json: 'jsonSample' )
     factory.attach_attribute( attr )
     FakerMaker.register_factory( factory )
 
@@ -95,7 +93,7 @@ RSpec.describe FakerMaker::Factory do
 
   it 'builds objects with arrays of attributes' do
     factory = FakerMaker::Factory.new( :e )
-    attr = FakerMaker::Attribute.new( :sample, {has: 2}, Proc.new{ 'sample' } )
+    attr = FakerMaker::Attribute.new( :sample, proc { 'sample' }, has: 2 )
     factory.attach_attribute( attr )
     FakerMaker.register_factory( factory )
 
@@ -104,6 +102,4 @@ RSpec.describe FakerMaker::Factory do
     expect( fake.sample ).to be_a Array 
     expect( fake.sample.count ).to eq 2
   end
-
-
 end
