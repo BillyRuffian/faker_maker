@@ -1,8 +1,9 @@
 module FakerMaker
+  # Attributes describe the fields of classes
   class Attribute
     attr_reader :name, :block, :translation
 
-    def initialize name, options={}, block
+    def initialize( name, block = nil, options = {} )
       assert_valid_options options
       @name = name
       @block = block
@@ -24,7 +25,7 @@ module FakerMaker
     end
 
     def translation?
-      ! @translation.blank?
+      !@translation.blank?
     end
 
     private 
@@ -33,9 +34,8 @@ module FakerMaker
       @cardinality.is_a?( Range ) || @cardinality > 1
     end
 
-    def assert_valid_options options
+    def assert_valid_options( options )
       options.assert_valid_keys :has, :array, :json
     end
-
   end
 end

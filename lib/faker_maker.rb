@@ -8,6 +8,7 @@ require 'faker_maker/factory'
 require 'faker_maker/definition_proxy'
 require 'faker_maker/attribute'
 
+# FakerMaker module for generating Fakes
 module FakerMaker
   extend FakerMaker::Base
 
@@ -18,7 +19,7 @@ module FakerMaker
 
   module_function
 
-  def register_factory factory
+  def register_factory( factory )
     factory.assemble
     factories[factory.name] = factory
   end
@@ -27,19 +28,19 @@ module FakerMaker
     @factories ||= {}
   end
 
-  def build name    
+  def build( name )
     find_factory( name ).build
   end
 
-  def [] name
+  def []( name )
     find_factory name
   end
   
-  def find_factory name
+  def find_factory( name )
     raise NoSuchFactoryError, "No such factory '#{name}'" if factories[name].nil?
+    
     factories[name]
   end
-
 end
 
 FM = FakerMaker
