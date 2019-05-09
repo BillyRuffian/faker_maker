@@ -21,7 +21,7 @@ module FakerMaker
       @attributes << attribute 
     end
 
-    def build( attributes={} )
+    def build( attributes = {} )
       instance = instantiate
       populate_instance instance, attributes
       yield instance if block_given?
@@ -38,12 +38,12 @@ module FakerMaker
       @klass
     end
 
-    def to_json
+    def to_json(*_args)
       build.to_json
     end
 
     def parent?
-      ! @parent.nil?
+      !@parent.nil?
     end
 
     def json_key_map
