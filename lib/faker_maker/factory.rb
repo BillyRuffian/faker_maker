@@ -1,7 +1,7 @@
 module FakerMaker
   # Factories construct instances of a fake
   class Factory
-    attr_reader :name, :attributes, :class_name, :parent_class, :parent
+    attr_reader :name, :attributes, :class_name, :parent
 
     def initialize( name, options = {} )
       assert_valid_options options
@@ -10,11 +10,14 @@ module FakerMaker
       @attributes = []
       @klass = nil
       @parent = options[:parent]
-      @parent_class = if @parent 
-                        Object.const_get( FakerMaker[@parent].class_name )
-                      else
-                        Object
-                      end
+    end
+    
+    def parent_class
+      if @parent 
+        Object.const_get( FakerMaker[@parent].class_name )
+      else
+        Object
+      end
     end
 
     def attach_attribute( attribute )
@@ -30,7 +33,7 @@ module FakerMaker
 
     def assemble
       if @klass.nil?
-        @klass = Class.new @parent_class
+        @klass = Class.new parent_class
         Object.const_set @class_name, @klass
         attach_attributes_to_class
         attach_json_overrides_to_class
@@ -43,7 +46,7 @@ module FakerMaker
     end
 
     def parent?
-      ! @parent.nil?
+      !@parent.nil?
     end
 
     def json_key_map
