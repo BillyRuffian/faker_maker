@@ -12,3 +12,6 @@ Gemfile.lock
 .rspec_status
 
 .DS_Store
+
+faker_maker-*.gem
+test.rb

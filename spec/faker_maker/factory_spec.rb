@@ -13,7 +13,7 @@ RSpec.describe FakerMaker::Factory do
 
   it 'returns attributes' do
     factory = FakerMaker::Factory.new( :post )
-    attributes = [FakerMaker::Attribute.new( :date, nil ), FakerMaker::Attribute.new( :title, nil ) ]
+    attributes = [FakerMaker::Attribute.new( :date, nil ), FakerMaker::Attribute.new( :title, nil )]
     attributes.each { |a| factory.attach_attribute( a ) }
     FakerMaker.register_factory( factory )
     expect( factory.attributes).to eq attributes
