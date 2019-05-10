@@ -48,4 +48,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec',     '~> 3.8'
   spec.add_development_dependency 'rubocop',   '~> 0.68'
   spec.add_development_dependency 'simplecov', '~> 0.16'
+  spec.add_development_dependency 'coveralls', '~> 0.8'
 end
