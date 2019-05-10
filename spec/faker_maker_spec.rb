@@ -1,7 +1,7 @@
 RSpec.describe FakerMaker do
   let( :factory ) { FakerMaker.register_factory( FakerMaker::Factory.new( :placeholder ) ) }
 
-  it "has a version number" do
+  it 'has a version number' do
     expect(FakerMaker::VERSION).not_to be nil
   end
 
@@ -14,6 +14,6 @@ RSpec.describe FakerMaker do
   end
   
   it 'raises an error if the factory doesn\'t exist' do
-    expect{ FakerMaker[ :'non existent factory' ] }.to raise_error( FakerMaker::NoSuchFactoryError )
+    expect { FakerMaker[:'non existent factory'] }.to raise_error( FakerMaker::NoSuchFactoryError )
   end
 end
