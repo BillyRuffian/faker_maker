@@ -5,10 +5,9 @@ module FakerMaker
       @factory = factory
     end
 
-    def method_missing(name, *args, &block)
+    def method_missing(name, *args, &block) # rubocop:disable Style/MethodMissingSuper
       attribute = FakerMaker::Attribute.new name, block, *args
       @factory.attach_attribute attribute
-      super
     end
     
     def respond_to_missing?(method_name, include_private = false)
