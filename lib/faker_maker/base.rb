@@ -1,4 +1,5 @@
 module FakerMaker
+  # Base module for defining the DSL
   module Base
     def factory(name, options = {}, &block)
       factory = FakerMaker::Factory.new name, options
