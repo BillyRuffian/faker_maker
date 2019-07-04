@@ -68,7 +68,7 @@ module FakerMaker
     
       FakerMaker[parent].populate_instance instance if parent?
       @attributes.each do |attr|       
-        value = value_for_attribute( attr, attr_override_values )
+        value = value_for_attribute( instance, attr, attr_override_values )
         instance.send "#{attr.name}=", value
       end
       instance.instance_variable_set( :@fm_factory, self )
@@ -87,13 +87,13 @@ module FakerMaker
       !attr_override_values[attr.name].nil?
     end
     
-    def value_for_attribute( attr, attr_override_values )
+    def value_for_attribute( instance, attr, attr_override_values )
       if attribute_hash_overridden_value?( attr, attr_override_values )
         attr_override_values[attr.name]
       elsif attr.array?
         [].tap { |a| attr.cardinality.times { a << attr.block.call } }
       else
-        attr.block.call
+        instance.instance_eval(&attr.block)
       end
     end
 
