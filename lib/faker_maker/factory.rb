@@ -64,11 +64,11 @@ module FakerMaker
     protected 
 
     def populate_instance( instance, attr_override_values )
-      assert_only_know_attributes_for_override( attr_override_values )
+      assert_only_known_attributes_for_override( attr_override_values )
     
-      FakerMaker[parent].populate_instance instance if parent?
+      FakerMaker[parent].populate_instance instance, attr_override_values if parent?
       @attributes.each do |attr|       
-        value = value_for_attribute( attr, attr_override_values )
+        value = value_for_attribute( instance, attr, attr_override_values )
         instance.send "#{attr.name}=", value
       end
       instance.instance_variable_set( :@fm_factory, self )
@@ -76,7 +76,7 @@ module FakerMaker
 
     private
     
-    def assert_only_know_attributes_for_override( attr_override_values )
+    def assert_only_known_attributes_for_override( attr_override_values )
       unknown_attrs = attr_override_values.keys - @attributes.map( &:name )
       issue = "Can't build an instance of '#{class_name}' " \
               "setting '#{unknown_attrs.join( ', ' )}', no such attribute(s)"
@@ -87,13 +87,13 @@ module FakerMaker
       !attr_override_values[attr.name].nil?
     end
     
-    def value_for_attribute( attr, attr_override_values )
+    def value_for_attribute( instance, attr, attr_override_values )
       if attribute_hash_overridden_value?( attr, attr_override_values )
         attr_override_values[attr.name]
       elsif attr.array?
         [].tap { |a| attr.cardinality.times { a << attr.block.call } }
       else
-        attr.block.call
+        instance.instance_eval(&attr.block)
       end
     end
 

@@ -59,6 +59,18 @@ FakerMaker.factory :response do
 end
 ```
 
+Blocks are executed in the context of their instance. This means you can refer to variables already defined:
+
+```ruby
+FakerMaker.factory :user, class: 'EmailUser' do 
+  title {'Ms'}
+  name {'Patsy Stone'}
+  formal_name {"#{title} #{name}"}
+  email {'patsy@fabulous.co.uk'}
+  admin {false}
+end
+```
+
 ### Inheritance
 
 FakerMaker can exploit the Ruby class hierarchy to provide additional specialisation or to override some behaviours:
@@ -128,6 +140,8 @@ FakerMaker.factory :basket do
 end
 ```
 
+### JSON field names
+
 ### Building instances
 
 Instances are Plain Ol' Ruby Objects and the attributes are attached with getters and setters with their values assigned to the value return from their block at build time. 
@@ -172,7 +186,7 @@ As a convenience, you can request a JSON representation directly:
 result = FakerMaker[:basket].to_json
 ```
 
-As another convenience, `FakerMaker` is also assign to the variable `FM` to it is possible to write just:
+As another convenience, `FakerMaker` is also assigned to the variable `FM` to it is possible to write just:
 
 ```ruby
 result = FM[:basket].build
