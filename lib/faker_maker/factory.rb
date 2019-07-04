@@ -64,9 +64,9 @@ module FakerMaker
     protected 
 
     def populate_instance( instance, attr_override_values )
-      assert_only_know_attributes_for_override( attr_override_values )
+      assert_only_known_attributes_for_override( attr_override_values )
     
-      FakerMaker[parent].populate_instance instance if parent?
+      FakerMaker[parent].populate_instance instance, attr_override_values if parent?
       @attributes.each do |attr|       
         value = value_for_attribute( instance, attr, attr_override_values )
         instance.send "#{attr.name}=", value
@@ -76,7 +76,7 @@ module FakerMaker
 
     private
     
-    def assert_only_know_attributes_for_override( attr_override_values )
+    def assert_only_known_attributes_for_override( attr_override_values )
       unknown_attrs = attr_override_values.keys - @attributes.map( &:name )
       issue = "Can't build an instance of '#{class_name}' " \
               "setting '#{unknown_attrs.join( ', ' )}', no such attribute(s)"
