@@ -84,7 +84,7 @@ module FakerMaker
     end
     
     def attribute_hash_overridden_value?( attr, attr_override_values )
-      !attr_override_values[attr.name].nil?
+      attr_override_values.keys.include?( attr.name )
     end
     
     def value_for_attribute( instance, attr, attr_override_values )
