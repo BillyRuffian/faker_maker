@@ -82,9 +82,9 @@ RSpec.describe FakerMaker::Factory do
     child_attributes.each { |a| child.attach_attribute( a ) }
     FakerMaker.register_factory( child )
 
-    fake = child.build( author: 'Teresa Greene' )
-    
+    fake = child.build( author: 'Teresa Greene', title: 'A Title' )
     expect( fake.author ).to eq 'Teresa Greene'
+    expect( fake.title ).to eq 'A Title'
   end
   
   it 'allows attribute overrides with nil' do
