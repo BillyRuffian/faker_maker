@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/ClassLength
 module FakerMaker
   # Factories construct instances of a fake
   class Factory
@@ -26,6 +27,7 @@ module FakerMaker
 
     def build( attributes = {} )
       instance = instantiate
+      assert_only_known_attributes_for_override( attributes )
       populate_instance instance, attributes
       yield instance if block_given?
       instance
@@ -61,23 +63,27 @@ module FakerMaker
       @json_key_map
     end
 
+    def attribute_names( collection = [] )
+      collection |= FakerMaker[parent].attribute_names( collection ) if parent?
+      collection | attributes.map( &:name )
+    end
+
     protected 
 
-    def populate_instance( instance, attr_override_values )
-      assert_only_known_attributes_for_override( attr_override_values )
-    
+    def populate_instance( instance, attr_override_values )    
       FakerMaker[parent].populate_instance instance, attr_override_values if parent?
-      @attributes.each do |attr|       
+      @attributes.each do |attr|
         value = value_for_attribute( instance, attr, attr_override_values )
         instance.send "#{attr.name}=", value
       end
       instance.instance_variable_set( :@fm_factory, self )
     end
-
+    
+    
     private
     
     def assert_only_known_attributes_for_override( attr_override_values )
-      unknown_attrs = attr_override_values.keys - @attributes.map( &:name )
+      unknown_attrs = attr_override_values.keys - attribute_names
       issue = "Can't build an instance of '#{class_name}' " \
               "setting '#{unknown_attrs.join( ', ' )}', no such attribute(s)"
       raise FakerMaker::NoSuchAttributeError, issue unless unknown_attrs.empty?
@@ -119,3 +125,4 @@ module FakerMaker
     end
   end
 end
+# rubocop:enable Metrics/ClassLength

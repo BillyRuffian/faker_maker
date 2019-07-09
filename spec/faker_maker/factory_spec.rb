@@ -71,6 +71,22 @@ RSpec.describe FakerMaker::Factory do
     expect( sample.second ).to eq 'overridden'
   end
   
+  it 'allows attribute overrides with inheritance' do
+    parent = FakerMaker::Factory.new( :parent )
+    parent_attributes = [FakerMaker::Attribute.new( :date ), FakerMaker::Attribute.new( :title )]
+    parent_attributes.each { |a| parent.attach_attribute( a ) }
+    FakerMaker.register_factory( parent )
+
+    child = FakerMaker::Factory.new( :child, parent: :parent )
+    child_attributes = [FakerMaker::Attribute.new( :author ), FakerMaker::Attribute.new( :content )]
+    child_attributes.each { |a| child.attach_attribute( a ) }
+    FakerMaker.register_factory( child )
+
+    fake = child.build( author: 'Teresa Greene' )
+    
+    expect( fake.author ).to eq 'Teresa Greene'
+  end
+  
   it 'allows attribute overrides with nil' do
     factory = FakerMaker::Factory.new( :overrides )
     attr1 = FakerMaker::Attribute.new( :first, proc { 'sample' } )
