@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/ClassLength
 module FakerMaker
   # Factories construct instances of a fake
   class Factory
@@ -62,10 +63,9 @@ module FakerMaker
       @json_key_map
     end
 
-
-    def attribute_names collection=[]
-      collection = collection | FakerMaker[parent].attribute_names( collection ) if parent?
-      collection = collection | attributes.map( &:name )
+    def attribute_names( collection = [] )
+      collection |= FakerMaker[parent].attribute_names( collection ) if parent?
+      collection | attributes.map( &:name )
     end
 
     protected 
@@ -80,7 +80,6 @@ module FakerMaker
     end
     
     
-
     private
     
     def assert_only_known_attributes_for_override( attr_override_values )

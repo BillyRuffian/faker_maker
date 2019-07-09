@@ -6,7 +6,7 @@ module FakerMaker
     def initialize( name, block = nil, options = {} )
       assert_valid_options options
       @name = name
-      @block = block || Proc.new { nil }
+      @block = block || proc { nil }
       @cardinality = options[:has] || 1
       @translation = options[:json]
       @array = options[:array] == true 
