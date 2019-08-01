@@ -42,7 +42,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'activesupport', '>= 5.2', '< 6'
 
   spec.add_development_dependency 'bundler',   '~> 2.0'
-  spec.add_development_dependency 'faker',     '~> 1.9'
+  spec.add_development_dependency 'faker',     '~> 2.1'
   spec.add_development_dependency 'pry',       '~> 0.12'
   spec.add_development_dependency 'rake',      '~> 12.3'
   spec.add_development_dependency 'rspec',     '~> 3.8'
