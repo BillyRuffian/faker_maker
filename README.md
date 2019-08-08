@@ -166,6 +166,14 @@ or by passing in a block:
 result = FakerMaker[:item].build{ |i| i.name = 'Electric Sheep' }
 ```
 
+this is particularly useful for overriding nested values, since all the getters and setters of the embedded objects are already constructed:
+
+```ruby
+result = FakerMaker[:basket].build do |b| 
+  b.items.first.name = 'Neon Badger'
+end
+```
+
 if you're crazy enough to want to do both styles during creation, the values in the block will be preserved, e.g.
 
 ```ruby
