@@ -249,7 +249,7 @@ There are three special modifiers:
 
 * `:nil` (symbol) to omit output when the attribute is set to nil
 * `:empty` to omit output when the value is an empty string, an empty array or an empty hash
-* `:always` to never output this attibute.
+* `:always` to never output this attribute.
 
 These can be mixed with real values, e.g.
 
