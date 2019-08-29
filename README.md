@@ -254,6 +254,11 @@ There are three special modifiers:
 These can be mixed with real values, e.g.
 
 ```ruby
+FakerMaker.factory :user do 
+  name {'Patsy Stone'}
+  email(omit: [:nil, :empty, 'test@foobar.com']) {'patsy@fabulous.co.uk'}
+  admin {false}
+end
 ```
 
 ### Embedding factories
