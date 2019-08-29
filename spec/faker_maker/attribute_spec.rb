@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe FakerMaker::Attribute do
   it 'has a name' do
     attr = FakerMaker::Attribute.new( :my_name, nil, {} )
@@ -29,5 +31,27 @@ RSpec.describe FakerMaker::Attribute do
   it 'allows arrays for cardinality of 1' do
     attr = FakerMaker::Attribute.new( :my_name, nil, array: true )
     expect( attr.array? ).to be true
+  end
+  
+  it 'can omit nils' do
+    attr = FakerMaker::Attribute.new( :my_name, nil, omit: :nil )
+    expect( attr.omit?(nil) ).to be true
+  end
+  
+  it 'can omit empty' do
+    attr = FakerMaker::Attribute.new( :my_name, nil, omit: :empty )
+    expect( attr.omit?('') ).to be true
+  end
+  
+  it 'can omit always' do
+    attr = FakerMaker::Attribute.new( :my_name, nil, omit: :always )
+    expect( attr.omit?('anything') ).to be true
+  end
+  
+  it 'can omit nils and empty' do
+    attr = FakerMaker::Attribute.new( :my_name, nil, omit: %i[nil empty] )
+    expect( attr.omit?('') ).to be true
+    expect( attr.omit?(nil) ).to be true
+    expect( attr.omit?('anything') ).to be false
   end
 end

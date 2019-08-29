@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 # rubocop:disable Metrics/ClassLength
 module FakerMaker
   # Factories construct instances of a fake
   class Factory
-    attr_reader :name, :attributes, :class_name, :parent
+    attr_reader :name, :class_name, :parent
 
     def initialize( name, options = {} )
       assert_valid_options options
@@ -47,6 +49,10 @@ module FakerMaker
       build.to_json
     end
 
+    def as_json(*_args)
+      build.as_json
+    end
+
     def parent?
       !@parent.nil?
     end
@@ -65,7 +71,16 @@ module FakerMaker
 
     def attribute_names( collection = [] )
       collection |= FakerMaker[parent].attribute_names( collection ) if parent?
-      collection | attributes.map( &:name )
+      collection | @attributes.map( &:name )
+    end
+    
+    def attributes( collection = [] )
+      collection |= FakerMaker[parent].attributes( collection ) if parent?
+      collection | @attributes
+    end
+    
+    def find_attribute( name = '' )
+      attributes.filter { |a| a.name == name }.first
     end
 
     protected 
@@ -116,7 +131,9 @@ module FakerMaker
 
     def attach_json_overrides_to_class
       @klass.define_method :as_json do |options = {}|
-        super( options.merge( except: 'fm_factory' ) ).transform_keys { |key| @fm_factory.json_key_map[key] || key }
+        super( options.merge( except: 'fm_factory' ) )
+          .transform_keys { |key| @fm_factory.json_key_map[key] || key }
+          .filter { |key, value| !@fm_factory.find_attribute(key)&.omit?( value ) }
       end
     end
 

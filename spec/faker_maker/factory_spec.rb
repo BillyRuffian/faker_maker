@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe FakerMaker::Factory do
   it 'has a name' do
     factory = FakerMaker::Factory.new( :user )
@@ -114,6 +116,15 @@ RSpec.describe FakerMaker::Factory do
     FakerMaker.register_factory( factory )
 
     expect( factory.to_json ).to include 'jsonSample' 
+    expect( factory.to_json ).not_to include 'sample' 
+  end
+  
+  it 'generates JSON and omits attributes' do
+    factory = FakerMaker::Factory.new( :g )
+    attr = FakerMaker::Attribute.new( :sample, proc { nil }, omit: :nil )
+    factory.attach_attribute( attr )
+    FakerMaker.register_factory( factory )
+
     expect( factory.to_json ).not_to include 'sample' 
   end
 

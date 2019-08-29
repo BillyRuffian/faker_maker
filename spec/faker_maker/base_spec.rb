@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe FakerMaker::Base do
   let(:dummy_class) { Class.new { extend FakerMaker::Base } }
 

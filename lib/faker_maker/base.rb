@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module FakerMaker
   # Base module for defining the DSL
   module Base

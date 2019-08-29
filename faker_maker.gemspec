@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Disable rubocop checks for the .gemspec
 # I'll take the output from 'bundle gem new' to be authoritative
 # rubocop:disable all

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe FakerMaker do
   let( :factory ) { FakerMaker.register_factory( FakerMaker::Factory.new( :placeholder ) ) }
 

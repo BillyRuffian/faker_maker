@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module FakerMaker
   # Attributes describe the fields of classes
   class Attribute
@@ -9,6 +11,7 @@ module FakerMaker
       @block = block || proc { nil }
       @cardinality = options[:has] || 1
       @translation = options[:json]
+      @omit = *options[:omit]
       @array = options[:array] == true 
     end
 
@@ -27,6 +30,17 @@ module FakerMaker
     def translation?
       !@translation.blank?
     end
+    
+    def omit?( value )
+      case value
+      when nil
+        @omit.include? :nil
+      when '', [], {}
+        @omit.include? :empty
+      else
+        @omit.include?( :always ) || @omit.include?( value )
+      end
+    end
 
     private 
 
@@ -35,7 +49,7 @@ module FakerMaker
     end
 
     def assert_valid_options( options )
-      options.assert_valid_keys :has, :array, :json
+      options.assert_valid_keys :has, :array, :json, :omit
     end
   end
 end

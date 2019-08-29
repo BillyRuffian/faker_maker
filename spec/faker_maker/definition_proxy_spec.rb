@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe FakerMaker::DefinitionProxy do 
   it 'dynamically creates attributes' do
     factory = FakerMaker::Factory.new( :definition_proxy )

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module FakerMaker
   # Proxy for mapping attribute names
   class DefinitionProxy
