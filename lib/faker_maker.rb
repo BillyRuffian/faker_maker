@@ -37,6 +37,7 @@ module FakerMaker
   def []( name )
     factory = find_factory(name)
     raise NoSuchFactoryError, "No such factory '#{name}'" unless factory
+
     factory
   end
   
