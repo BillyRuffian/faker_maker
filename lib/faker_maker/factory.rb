@@ -80,7 +80,7 @@ module FakerMaker
     end
     
     def find_attribute( name = '' )
-      attributes.filter { |a| a.name == name || a.translation == name }.first
+      attributes.filter { |a| [a.name, a.translation].include? name }.first
     end
 
     protected 
