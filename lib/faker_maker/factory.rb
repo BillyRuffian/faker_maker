@@ -112,7 +112,7 @@ module FakerMaker
       if attribute_hash_overridden_value?( attr, attr_override_values )
         attr_override_values[attr.name]
       elsif attr.array?
-        [].tap { |a| attr.cardinality.times { a << attr.block.call } }
+        [].tap { |a| attr.cardinality.times { a << instance.instance_eval(&attr.block) } }
       else
         instance.instance_eval(&attr.block)
       end
