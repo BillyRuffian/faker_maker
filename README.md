@@ -3,14 +3,20 @@
   <br>
   Faker Maker
   <br>
+</h1>
+
+<h4 align="center">
+  Factories over Fixtures
+</h4>
+
+<div align="center">
 
   [![Gem Version](https://badge.fury.io/rb/faker_maker.svg)](https://badge.fury.io/rb/faker_maker)
   ![CircleCI branch](https://img.shields.io/circleci/project/github/BillyRuffian/faker_maker/master.svg?style=flat-square)
   [![CodeFactor](https://www.codefactor.io/repository/github/billyruffian/faker_maker/badge?style=flat-square)](https://www.codefactor.io/repository/github/billyruffian/faker_maker)
   ![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/BillyRuffian/faker_maker.svg?style=flat-square)
 
-</h1>
-# FakerMaker
+</div>
 
 FakerMaker is a simple fixture generator with a concise and straightforward syntax.
 
