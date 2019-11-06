@@ -1,0 +1,16 @@
+   * [Table of Contents](#table-of-contents)
+      * [Installation](#installation)
+      * [Usage](#usage)
+         * [Inheritance](#inheritance)
+         * [Arrays](#arrays)
+         * [Organising dependencies](#organising-dependencies)
+         * [JSON field names](#json-field-names)
+         * [Building instances](#building-instances)
+         * [Omitting fields](#omitting-fields)
+         * [Embedding factories](#embedding-factories)
+      * [Contributing](#contributing)
+      * [License](#license)
+      * [Extra credit](#extra-credit)
+
+<!-- Added by: brooken, at: Wed  6 Nov 2019 15:59:31 GMT -->
+

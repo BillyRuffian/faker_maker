@@ -22,27 +22,24 @@ FakerMaker is a simple fixture generator with a concise and straightforward synt
 
 It is designed to resemble the [FactoryBot](https://github.com/thoughtbot/factory_bot) gem but without needing an existing class definition to back its fixtures and so it goes without saying that it offers no persistence mechanism. Its purpose is to provide a simple framework for generating data to test JSON APIs and is intended to be used with the [Faker](https://github.com/stympy/faker) gem (but has no dependency upon it).
 
-# Table of Contents
 <!--ts-->
-   * [Table of Contents](#table-of-contents)
-   * [Installation](#installation)
-   * [Usage](#usage)
-      * [Inheritance](#inheritance)
-      * [Arrays](#arrays)
-      * [Organising dependencies](#organising-dependencies)
-      * [JSON field names](#json-field-names)
-      * [Building instances](#building-instances)
-      * [Omitting fields](#omitting-fields)
-      * [Embedding factories](#embedding-factories)
-   * [Contributing](#contributing)
-   * [License](#license)
-   * [Extra credit](#extra-credit)
+# Table of Contents
 
-<!-- Added by: brooken, at: Wed  6 Nov 2019 16:01:07 GMT -->
-
+* [Installation](#installation)
+* [Usage](#usage)
+    * [Inheritance](#inheritance)
+    * [Arrays](#arrays)
+    * [Organising dependencies](#organising-dependencies)
+    * [JSON field names](#json-field-names)
+    * [Building instances](#building-instances)
+    * [Omitting fields](#omitting-fields)
+    * [Embedding factories](#embedding-factories)
+* [Contributing](#contributing)
+* [License](#license)
+* [Extra credit](#extra-credit)
 <!--te-->
 
-# Installation
+## Installation
 
 Add this line to your application's Gemfile:
 
@@ -58,7 +55,7 @@ Or install it yourself as:
 
     $ gem install faker_maker
 
-# Usage
+## Usage
 
 FakerMaker generates factories that build disposable objects for testing. Each factory has a name and a set of attributes.
 
@@ -104,7 +101,7 @@ FakerMaker.factory :user, class: 'EmailUser' do
 end
 ```
 
-## Inheritance
+### Inheritance
 
 FakerMaker can exploit the Ruby class hierarchy to provide additional specialisation or to override some behaviours:
 
@@ -135,7 +132,7 @@ end
 
 so a motorbike will still have a colour and engine capacity between 600 and 2500.
 
-## Arrays
+### Arrays
 
 It is possible to declare an attribute as having multiple values.
 
@@ -173,11 +170,11 @@ FakerMaker.factory :basket do
 end
 ```
 
-## Organising dependencies
+### Organising dependencies
 
 Factory definition files are Plain Ol' Ruby. If you depend on another factory because you either extend from it or use it just add a `require` or (depending on your load path) `require_relative` to the top of your file. 
 
-## JSON field names
+### JSON field names
 
 JavaScript likes to use camelCase, Ruby's idiom is to use snake_case. This can make make manipulating factory-built objects in ruby ugly. To avoid this, you can call your fields one thing and ask the JSON outputter to rename the field when generating JSON.
 
@@ -200,7 +197,7 @@ v.to_json
 => "{\"wheels\":4,\"colour\":\"blue\",\"engineCapacity\":125}"
 ```
 
-## Building instances
+### Building instances
 
 Instances are Plain Ol' Ruby Objects and the attributes are attached with getters and setters with their values assigned to the value return from their block at build time. 
 
@@ -258,7 +255,7 @@ As another convenience, `FakerMaker` is also assigned to the variable `FM` to it
 result = FM[:basket].build
 ```
 
-## Omitting fields
+### Omitting fields
 
 Sometimes you want a field present, other times you don't. This is often the case when you want to skip fields which have null or empty values.
 
@@ -294,7 +291,7 @@ FakerMaker.factory :user do
 end
 ```
 
-## Embedding factories
+### Embedding factories
 
 To use factories with factories, the following pattern is recommended:
 
@@ -309,14 +306,14 @@ FakerMaker.factory :basket do
 end
 ```
 
-# Contributing
+## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/BillyRuffian/faker_maker.
 
-# License
+## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
-# Extra credit
+## Extra credit
 
 Unipug logo by <a href="https://pixabay.com/users/1smr1-4646356/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=2970825">1smr1</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=2970825">Pixabay</a>
