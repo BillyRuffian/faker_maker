@@ -1,8 +1,15 @@
+<h1 align="center">
+  <img src="https://raw.githubusercontent.com/BillyRuffian/faker_maker/master/img/unipug.svg" alt="Faker Maker" width="200"></a>
+  <br>
+  Faker Maker
+  <br>
 
-![CircleCI branch](https://img.shields.io/circleci/project/github/BillyRuffian/faker_maker/master.svg?style=flat-square)
-[![CodeFactor](https://www.codefactor.io/repository/github/billyruffian/faker_maker/badge?style=flat-square)](https://www.codefactor.io/repository/github/billyruffian/faker_maker)
-![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/BillyRuffian/faker_maker.svg?style=flat-square)
+  [![Gem Version](https://badge.fury.io/rb/faker_maker.svg)](https://badge.fury.io/rb/faker_maker)
+  ![CircleCI branch](https://img.shields.io/circleci/project/github/BillyRuffian/faker_maker/master.svg?style=flat-square)
+  [![CodeFactor](https://www.codefactor.io/repository/github/billyruffian/faker_maker/badge?style=flat-square)](https://www.codefactor.io/repository/github/billyruffian/faker_maker)
+  ![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/BillyRuffian/faker_maker.svg?style=flat-square)
 
+</h1>
 # FakerMaker
 
 FakerMaker is a simple fixture generator with a concise and straightforward syntax.
@@ -283,3 +290,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/BillyR
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+
+## Extra credit
+
+Unipug logo by <a href="https://pixabay.com/users/1smr1-4646356/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=2970825">1smr1</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=2970825">Pixabay</a>
