@@ -5,7 +5,7 @@ parent: Usage
 nav_order: 4
 ---
 
-# JSON field names
+# JSON Field Names
 
 JavaScript likes to use camelCase, Ruby's idiom is to use snake_case. This can make make manipulating factory-built objects in ruby ugly. To avoid this, you can call your fields one thing and ask the JSON outputter to rename the field when generating JSON.
 

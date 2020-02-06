@@ -5,7 +5,7 @@ parent: Usage
 nav_order: 6
 ---
 
-# Building instances
+# Building Instances
 
 Instances are Plain Ol' Ruby Objects and the attributes are attached with getters and setters with their values assigned to the value return from their block at build time. 
 

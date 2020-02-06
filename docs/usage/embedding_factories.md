@@ -5,7 +5,7 @@ parent: Usage
 nav_order: 7
 ---
 
-# Embedding factories
+# Embedding Factories
 
 To use factories with factories, the following pattern is recommended:
 

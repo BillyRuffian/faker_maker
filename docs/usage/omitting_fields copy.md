@@ -5,7 +5,7 @@ parent: Usage
 nav_order: 5
 ---
 
-# Omitting fields
+# Omitting Fields
 
 Sometimes you want a field present, other times you don't. This is often the case when you want to skip fields which have null or empty values.
 
