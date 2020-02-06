@@ -1,5 +1,6 @@
 remote_theme: pmarsceill/just-the-docs
-# logo: "//raw.githubusercontent.com/BillyRuffian/faker_maker/master/img/unipug.svg?sanitize=true"
+theme: "just-the-docs"
+logo: "logo.png"
 title: Faker Maker
 description: A simple data generator with a straighforward syntax for Ruby
 aux_links:
