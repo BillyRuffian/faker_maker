@@ -1,3 +1,8 @@
-theme: jekyll-theme-primer
+remote_theme: pmarsceill/just-the-docs
+logo: "//raw.githubusercontent.com/BillyRuffian/faker_maker/master/img/unipug.svg?sanitize=true"
 title: Faker Maker
 description: A simple data generator with a straighforward syntax for Ruby
+aux_links:
+  "Faker Maker on GitHub":
+    - "//github.com/BillyRuffian/faker_maker"
+footer_content: "Copyright &copy; 2019-2020 Nigel Brookes-Thomas. Distributed by an <a href=\"https://github.com/BillyRuffian/faker_maker/blob/master/LICENSE.txt\">MIT license.</a>"
