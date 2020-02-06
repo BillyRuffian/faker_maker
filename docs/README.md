@@ -6,10 +6,8 @@ permalink: /
 ---
 
 # Factories over fixtures
-{: .fs-9 }
 
 FakerMaker is a simple data generator with a concise and straightforward syntax so you can throw away your fixtures and generate test data instead.
-{: .fs-6 .fw-300 }
 
 Sometimes you need generate data; something testers need to do a lot. Often, a bunch of fixtures will be built by hand, carefully maintained and curated, until the API or schema or something changes and all the fixtures need to be pruned before the tests pass again. This drives testers into building fixtures which individually cover lots of acceptance critera just so that they can drive down the number of them they have to maintain until the fixtures don't resemble anything like realistic criteria.
 
