@@ -1,5 +1,4 @@
 remote_theme: pmarsceill/just-the-docs
-theme: "just-the-docs"
 logo: "https://raw.githubusercontent.com/BillyRuffian/faker_maker/master/docs/logo.png"
 title: Faker Maker
 description: A simple data generator with a straighforward syntax for Ruby
