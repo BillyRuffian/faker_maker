@@ -15,8 +15,8 @@ Gem::Specification.new do |spec|
   spec.email         = ['nigel@brookes-thomas.co.uk']
 
   spec.summary       = 'FakerMaker bakes fakes.'
-  spec.description   = 'FakerMaker is a simple fixture generator with a concise and straightforward syntax.'
-  spec.homepage      = 'https://github.com/BillyRuffian/faker_maker'
+  spec.description   = 'FakerMaker is a simple factory builder so you can throw away your fixtures and generate test data instead.'
+  spec.homepage      = 'https://billyruffian.github.io/faker_maker/'
   spec.license       = 'MIT'
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
@@ -24,9 +24,9 @@ Gem::Specification.new do |spec|
   if spec.respond_to?(:metadata)
     # spec.metadata['allowed_push_host'] = 'TODO: Set to 'http://mygemserver.com''
 
-    # spec.metadata['homepage_uri'] = spec.homepage
+    spec.metadata['homepage_uri'] = spec.homepage
     spec.metadata['source_code_uri'] = 'https://github.com/BillyRuffian/faker_maker'
-    # spec.metadata['changelog_uri'] = 'TODO: Put your gem's CHANGELOG.md URL here.'
+    spec.metadata['changelog_uri'] = 'https://github.com/BillyRuffian/faker_maker/releases'
   else
     raise 'RubyGems 2.0 or newer is required to protect against ' \
       'public gem pushes.'
