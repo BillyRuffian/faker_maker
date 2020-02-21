@@ -5,6 +5,14 @@ parent: Usage
 nav_order: 8
 ---
 
+## A Cautionary Tale
+
+If you think you want to do this, you are probably wrong. This will not only de-register the factory from Faker Maker, but also delete the class definition from the interpreter. While it's cool that Ruby allows this, it's almost certainly going to hurt. 
+
+This functionality exists for experimenting with factories in REPLs.
+
+Seriously, don't use this in anger.
+
 # Destroying Factories
 
 Faker Maker deliberately does not allow you to redefine a factory by redeclaring it. It will also be silent about your attempt to do so. This is to avoid throwing up runtime warning from the Ruby interpreter if you are embedding one factory definition in another.
