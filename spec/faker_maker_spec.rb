@@ -18,4 +18,26 @@ RSpec.describe FakerMaker do
   it 'raises an error if the factory doesn\'t exist' do
     expect { FakerMaker[:'non existent factory'] }.to raise_error( FakerMaker::NoSuchFactoryError )
   end
+  
+  describe '#shut!' do
+    it 'removes the factory and its class' do
+      factory = FakerMaker.register_factory( FakerMaker::Factory.new( :shut_me ) )
+      expect( Object.const_get( factory.class_name) ).not_to be_nil
+      FakerMaker.shut!( factory.name )
+      expect { FakerMaker[factory.name] }.to raise_error( FakerMaker::NoSuchFactoryError )
+      expect { Object.const_get( factory.class_name) }.to raise_error( NameError )
+    end
+  end
+  
+  describe '#shut_all!' do
+    it 'closes all factories and removes their classes' do
+      FakerMaker.register_factory( FakerMaker::Factory.new( :shut_me ) )
+      factories = FakerMaker.factories
+      FakerMaker.shut_all!
+      factories.each do |name, factory|
+        expect { FakerMaker[name] }.to raise_error( FakerMaker::NoSuchFactoryError )
+        expect { Object.const_get( factory.class_name) }.to raise_error( NameError )
+      end
+    end
+  end
 end
