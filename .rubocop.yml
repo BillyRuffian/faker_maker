@@ -14,10 +14,10 @@ Metrics/BlockLength:
 
 Layout/TrailingWhitespace:
   Enabled: true
-  
+
 Layout/SpaceAroundMethodCallOperator:
   Enabled: true
-  
+
 Lint/RaiseException:
   Enabled: true
 
