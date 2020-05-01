@@ -12,7 +12,7 @@ module FakerMaker
       @cardinality = options[:has] || 1
       @translation = options[:json]
       @omit = *options[:omit]
-      @array = options[:array] == true 
+      @array = options[:array] == true
     end
 
     def array?
@@ -21,7 +21,7 @@ module FakerMaker
 
     def cardinality
       if @cardinality.is_a? Range
-        rand( @cardinality ) 
+        rand( @cardinality )
       else
         @cardinality
       end
@@ -30,7 +30,7 @@ module FakerMaker
     def translation?
       !@translation.blank?
     end
-    
+
     def omit?( value )
       case value
       when nil
@@ -42,7 +42,7 @@ module FakerMaker
       end
     end
 
-    private 
+    private
 
     def forced_array?
       @cardinality.is_a?( Range ) || @cardinality > 1

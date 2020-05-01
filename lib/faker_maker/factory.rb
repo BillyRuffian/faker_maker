@@ -14,9 +14,9 @@ module FakerMaker
       @klass = nil
       @parent = options[:parent]
     end
-    
+
     def parent_class
-      if @parent 
+      if @parent
         Object.const_get( FakerMaker[@parent].class_name )
       else
         Object
@@ -24,14 +24,19 @@ module FakerMaker
     end
 
     def attach_attribute( attribute )
-      @attributes << attribute 
+      @attributes << attribute
+    end
+
+    def instance
+      @instance ||= instantiate
     end
 
     def build( attributes = {} )
-      instance = instantiate
+      before_build if respond_to? :before_build
       assert_only_known_attributes_for_override( attributes )
       populate_instance instance, attributes
       yield instance if block_given?
+      after_build if respond_to? :after_build
       instance
     end
 
@@ -73,19 +78,19 @@ module FakerMaker
       collection |= FakerMaker[parent].attribute_names( collection ) if parent?
       collection | @attributes.map( &:name )
     end
-    
+
     def attributes( collection = [] )
       collection |= FakerMaker[parent].attributes( collection ) if parent?
       collection | @attributes
     end
-    
+
     def find_attribute( name = '' )
       attributes.filter { |a| [a.name, a.translation].include? name }.first
     end
 
-    protected 
+    protected
 
-    def populate_instance( instance, attr_override_values )    
+    def populate_instance( instance, attr_override_values )
       FakerMaker[parent].populate_instance instance, attr_override_values if parent?
       @attributes.each do |attr|
         value = value_for_attribute( instance, attr, attr_override_values )
@@ -93,21 +98,20 @@ module FakerMaker
       end
       instance.instance_variable_set( :@fm_factory, self )
     end
-    
-    
+
     private
-    
+
     def assert_only_known_attributes_for_override( attr_override_values )
       unknown_attrs = attr_override_values.keys - attribute_names
       issue = "Can't build an instance of '#{class_name}' " \
               "setting '#{unknown_attrs.join( ', ' )}', no such attribute(s)"
       raise FakerMaker::NoSuchAttributeError, issue unless unknown_attrs.empty?
     end
-    
+
     def attribute_hash_overridden_value?( attr, attr_override_values )
       attr_override_values.keys.include?( attr.name )
     end
-    
+
     def value_for_attribute( instance, attr, attr_override_values )
       if attribute_hash_overridden_value?( attr, attr_override_values )
         attr_override_values[attr.name]
