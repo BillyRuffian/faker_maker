@@ -159,7 +159,7 @@ RSpec.describe FakerMaker::Factory do
     expect(factory).to receive(:after_build).once
     factory.build
   end
-  
+
   describe '#instance' do
     it 'returns the instance' do
       factory = FakerMaker::Factory.new( :factory )
