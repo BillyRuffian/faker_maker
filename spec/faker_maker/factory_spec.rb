@@ -59,7 +59,7 @@ RSpec.describe FakerMaker::Factory do
 
     expect( factory.build.sample ).to eq 'sample'
   end
-  
+
   it 'allows attribute overrides' do
     factory = FakerMaker::Factory.new( :overrides )
     attr1 = FakerMaker::Attribute.new( :first, proc { 'sample' } )
@@ -67,12 +67,12 @@ RSpec.describe FakerMaker::Factory do
     factory.attach_attribute( attr1 )
     factory.attach_attribute( attr2 )
     FakerMaker.register_factory( factory )
-    
+
     sample = factory.build( second: 'overridden' )
     expect( sample.first ).to eq 'sample'
     expect( sample.second ).to eq 'overridden'
   end
-  
+
   it 'allows attribute overrides with inheritance' do
     parent = FakerMaker::Factory.new( :parent )
     parent_attributes = [FakerMaker::Attribute.new( :date ), FakerMaker::Attribute.new( :title )]
@@ -88,13 +88,13 @@ RSpec.describe FakerMaker::Factory do
     expect( fake.author ).to eq 'Teresa Greene'
     expect( fake.title ).to eq 'A Title'
   end
-  
+
   it 'allows attribute overrides with nil' do
     factory = FakerMaker::Factory.new( :overrides )
     attr1 = FakerMaker::Attribute.new( :first, proc { 'sample' } )
     factory.attach_attribute( attr1 )
     FakerMaker.register_factory( factory )
-    
+
     sample = factory.build( first: nil )
     expect( sample.first ).to be nil
   end
@@ -115,17 +115,17 @@ RSpec.describe FakerMaker::Factory do
     factory.attach_attribute( attr )
     FakerMaker.register_factory( factory )
 
-    expect( factory.to_json ).to include 'jsonSample' 
-    expect( factory.to_json ).not_to include 'sample' 
+    expect( factory.to_json ).to include 'jsonSample'
+    expect( factory.to_json ).not_to include 'sample'
   end
-  
+
   it 'generates JSON and omits attributes' do
     factory = FakerMaker::Factory.new( :g )
     attr = FakerMaker::Attribute.new( :sample, proc { nil }, omit: :nil )
     factory.attach_attribute( attr )
     FakerMaker.register_factory( factory )
 
-    expect( factory.to_json ).not_to include 'sample' 
+    expect( factory.to_json ).not_to include 'sample'
   end
 
   it 'builds objects with arrays of attributes' do
@@ -136,10 +136,10 @@ RSpec.describe FakerMaker::Factory do
 
     fake = factory.build
 
-    expect( fake.sample ).to be_a Array 
+    expect( fake.sample ).to be_a Array
     expect( fake.sample.count ).to eq 2
   end
-  
+
   it 'calls the before hook' do
     factory = FakerMaker::Factory.new( :hook )
     proxy = FakerMaker::DefinitionProxy.new( factory )
@@ -149,7 +149,7 @@ RSpec.describe FakerMaker::Factory do
     expect(factory).to receive(:before_build).once
     factory.build
   end
-  
+
   it 'calls the after hook' do
     factory = FakerMaker::Factory.new( :hook )
     proxy = FakerMaker::DefinitionProxy.new( factory )

@@ -42,19 +42,19 @@ module FakerMaker
 
     factory
   end
-  
+
   def find_factory( name )
     factories[name]
   end
-  
+
   def shut!( name )
     factory = find_factory( name )
     return unless factory
-    
+
     factories[name] = nil
     Object.send( :remove_const, factory.class_name )
   end
-  
+
   def shut_all!
     factories.each_key { |f| shut!( f ) }
   end

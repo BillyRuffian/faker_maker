@@ -13,7 +13,7 @@ Metrics/BlockLength:
     - "**/*_spec.rb"
 
 Layout/TrailingWhitespace:
-  Enabled: false
+  Enabled: true
   
 Layout/SpaceAroundMethodCallOperator:
   Enabled: true
