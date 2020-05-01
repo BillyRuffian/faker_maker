@@ -26,7 +26,7 @@ Lint/StructNewOverride:
 
 Style/ExponentialNotation:
   Enabled: true
-  
+
 Style/HashEachMethods:
   Enabled: true
 
