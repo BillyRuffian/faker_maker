@@ -139,4 +139,24 @@ RSpec.describe FakerMaker::Factory do
     expect( fake.sample ).to be_a Array 
     expect( fake.sample.count ).to eq 2
   end
+  
+  it 'calls the before hook' do
+    factory = FakerMaker::Factory.new( :hook )
+    proxy = FakerMaker::DefinitionProxy.new( factory )
+    attr = FakerMaker::Attribute.new( :sample, proc { 'sample' } )
+    factory.attach_attribute( attr )
+    proxy.send(:before_build) { "value #{faker_maker_factory.instance.sample}" }
+    expect(factory).to receive(:before_build).once
+    factory.build
+  end
+  
+  it 'calls the after hook' do
+    factory = FakerMaker::Factory.new( :hook )
+    proxy = FakerMaker::DefinitionProxy.new( factory )
+    attr = FakerMaker::Attribute.new( :sample, proc { 'sample' } )
+    factory.attach_attribute( attr )
+    proxy.send(:after_build) { "value #{faker_maker_factory.instance.sample}" }
+    expect(factory).to receive(:after_build).once
+    factory.build
+  end
 end

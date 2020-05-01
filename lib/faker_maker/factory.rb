@@ -3,7 +3,7 @@
 # rubocop:disable Metrics/ClassLength
 module FakerMaker
   # Factories construct instances of a fake
-  class Factory
+  class Factory    
     attr_reader :name, :class_name, :parent
 
     def initialize( name, options = {} )
@@ -26,12 +26,17 @@ module FakerMaker
     def attach_attribute( attribute )
       @attributes << attribute 
     end
+    
+    def instance
+      @instance ||= instantiate
+    end
 
     def build( attributes = {} )
-      instance = instantiate
+      before_build if respond_to? :before_build
       assert_only_known_attributes_for_override( attributes )
       populate_instance instance, attributes
       yield instance if block_given?
+      after_build if respond_to? :after_build
       instance
     end
 

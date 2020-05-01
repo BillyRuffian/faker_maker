@@ -2,7 +2,7 @@
 layout: default
 title: Embedding Factories
 parent: Usage
-nav_order: 7
+nav_order: 8
 ---
 
 # Embedding Factories
