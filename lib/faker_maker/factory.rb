@@ -32,6 +32,7 @@ module FakerMaker
     end
 
     def build( attributes = {} )
+      @instance = nil
       before_build if respond_to? :before_build
       assert_only_known_attributes_for_override( attributes )
       populate_instance instance, attributes
