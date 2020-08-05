@@ -12,6 +12,7 @@
 <div align="center">
 
   [![Gem Version](https://badge.fury.io/rb/faker_maker.svg)](https://badge.fury.io/rb/faker_maker)
+  [![Downloads](https://img.shields.io/gem/dt/faker_maker)](https://rubygems.org/gems/faker_maker)
   ![CircleCI branch](https://img.shields.io/circleci/project/github/BillyRuffian/faker_maker/master.svg?style=flat-square)
   [![CodeFactor](https://www.codefactor.io/repository/github/billyruffian/faker_maker/badge?style=flat-square)](https://www.codefactor.io/repository/github/billyruffian/faker_maker)
   ![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/BillyRuffian/faker_maker.svg?style=flat-square)
