@@ -10,6 +10,16 @@ module FakerMaker
       assert_valid_options options
       @name = name.respond_to?(:to_sym) ? name.to_sym : name.to_s.underscore.to_sym
       @class_name = (options[:class] || @name).to_s.camelcase
+      @naming_strategy = case options[:naming]
+                         when :json
+                           FakerMaker::Naming::JSON
+                         when :json_capitalized, :json_capitalised
+                           FakerMaker::Naming::JSONCapitalized
+                         when nil
+                           nil
+                         else
+                           raise FakerMaker::NoSuchAttributeNamingStrategy, opttions[:naming]
+                         end
       @attributes = []
       @klass = nil
       @parent = options[:parent]
@@ -68,7 +78,14 @@ module FakerMaker
         @json_key_map = {}.with_indifferent_access
         @json_key_map.merge!( FakerMaker[parent].json_key_map ) if parent?
         attributes.each_with_object( @json_key_map ) do |attr, map|
-          key = attr.translation? ? attr.translation : attr.name
+          key = if attr.translation?
+                  attr.translation
+                elsif @naming_strategy
+                  @naming_strategy.name(attr.name)
+                else
+                  attr.name
+                end
+
           map[attr.name] = key
         end
       end
@@ -143,7 +160,7 @@ module FakerMaker
     end
 
     def assert_valid_options( options )
-      options.assert_valid_keys :class, :parent
+      options.assert_valid_keys :class, :parent, :naming
     end
   end
 end

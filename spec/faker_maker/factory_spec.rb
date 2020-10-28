@@ -119,6 +119,36 @@ RSpec.describe FakerMaker::Factory do
     expect( factory.to_json ).not_to include 'sample'
   end
 
+  it 'generates JSON and auto-translates keys to camelCase' do
+    factory = FakerMaker::Factory.new( :h, naming: :json )
+    attr = FakerMaker::Attribute.new( :this_is_a_key, proc { 'sample' } )
+    factory.attach_attribute( attr )
+    FakerMaker.register_factory( factory )
+
+    expect( factory.to_json ).to include 'thisIsAKey'
+    expect( factory.to_json ).not_to include 'this_is_a_key'
+  end
+
+  it 'generates JSON and auto-translates keys to CamelCase' do
+    factory = FakerMaker::Factory.new( :h, naming: :json_capitalised )
+    attr = FakerMaker::Attribute.new( :this_is_a_key, proc { 'sample' } )
+    factory.attach_attribute( attr )
+    FakerMaker.register_factory( factory )
+
+    expect( factory.to_json ).to include 'ThisIsAKey'
+    expect( factory.to_json ).not_to include 'this_is_a_key'
+  end
+
+  it 'generates JSON and translates auto-translated keys' do
+    factory = FakerMaker::Factory.new( :i, naming: :json )
+    attr = FakerMaker::Attribute.new( :this_is_a_key, proc { 'sample' }, json: 'overridenTranslation' )
+    factory.attach_attribute( attr )
+    FakerMaker.register_factory( factory )
+
+    expect( factory.to_json ).to include 'overridenTranslation'
+    expect( factory.to_json ).not_to include 'thisIsAKey'
+  end
+
   it 'generates JSON and omits attributes' do
     factory = FakerMaker::Factory.new( :g )
     attr = FakerMaker::Attribute.new( :sample, proc { nil }, omit: :nil )
