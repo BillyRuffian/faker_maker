@@ -9,7 +9,9 @@ require 'faker_maker/base'
 require 'faker_maker/lifecycle_hooks'
 require 'faker_maker/definition_proxy'
 require 'faker_maker/factory'
-require 'faker_maker/lifecycle_hooks'
+
+require 'faker_maker/naming/json'
+require 'faker_maker/naming/json_capitalized'
 require 'faker_maker/version'
 
 # FakerMaker module for generating Fakes
@@ -19,6 +21,7 @@ module FakerMaker
   class Error < StandardError; end
   class NoSuchFactoryError < StandardError; end
   class NoSuchAttributeError < StandardError; end
+  class NoSuchAttributeNamingStrategy < StandardError; end
   # Your code goes here...
 
   module_function
