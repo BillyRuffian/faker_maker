@@ -10,6 +10,7 @@ require 'faker_maker/lifecycle_hooks'
 require 'faker_maker/definition_proxy'
 require 'faker_maker/factory'
 
+require 'faker_maker/naming'
 require 'faker_maker/naming/json'
 require 'faker_maker/naming/json_capitalized'
 require 'faker_maker/version'

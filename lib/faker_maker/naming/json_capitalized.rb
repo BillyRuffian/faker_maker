@@ -2,6 +2,7 @@
 
 module FakerMaker
   module Naming
+    # Use CamelCase for naming
     module JSONCapitalized
       def self.name(name)
         name.to_s.camelize

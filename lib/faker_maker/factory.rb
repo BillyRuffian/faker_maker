@@ -16,7 +16,7 @@ module FakerMaker
                          when :json_capitalized, :json_capitalised
                            FakerMaker::Naming::JSONCapitalized
                          when nil
-                          nil
+                           nil
                          else
                            raise FakerMaker::NoSuchAttributeNamingStrategy, opttions[:naming]
                          end
@@ -85,7 +85,7 @@ module FakerMaker
                 else
                   attr.name
                 end
-            
+
           map[attr.name] = key
         end
       end
