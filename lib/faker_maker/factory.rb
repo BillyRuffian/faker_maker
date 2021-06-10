@@ -61,12 +61,12 @@ module FakerMaker
       @klass
     end
 
-    def to_json(*_args)
-      build.to_json
+    def to_json(*args)
+      build.to_json(*args)
     end
 
-    def as_json(*_args)
-      build.as_json
+    def as_json(*args)
+      build.as_json(*args)
     end
 
     def parent?
@@ -154,8 +154,8 @@ module FakerMaker
     def attach_json_overrides_to_class
       @klass.define_method :as_json do |options = {}|
         super( options.merge( except: 'fm_factory' ) )
-          .transform_keys { |key| @fm_factory.json_key_map[key] || key }
-          .filter { |key, value| !@fm_factory.find_attribute(key)&.omit?( value ) }
+          .transform_keys { |key| options[:preserve_keys] ? key : (@fm_factory.json_key_map[key] || key) }
+          .filter { |key, value| options[:preserve_keys] || !@fm_factory.find_attribute(key)&.omit?( value ) }
       end
     end
 
