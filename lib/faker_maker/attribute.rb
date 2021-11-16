@@ -34,7 +34,7 @@ module FakerMaker
     def omit?( value )
       case value
       when nil
-        @omit.include? :nil
+        @omit.include?( :nil ) || @omit.include?( nil )
       when '', [], {}
         @omit.include? :empty
       else

@@ -103,7 +103,7 @@ module FakerMaker
     end
 
     def find_attribute( name = '' )
-      attributes.filter { |a| [a.name, a.translation, @naming_strategy&.name(name)].include? name }.first
+      attributes.filter { |a| [a.name, a.translation, @naming_strategy&.name(a.name)].include? name }.first
     end
 
     protected
