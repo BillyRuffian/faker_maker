@@ -3,7 +3,7 @@
 module FakerMaker
   # Attributes describe the fields of classes
   class Attribute
-    attr_reader :name, :block, :translation
+    attr_reader :name, :block, :translation, :required
 
     def initialize( name, block = nil, options = {} )
       assert_valid_options options
@@ -13,6 +13,7 @@ module FakerMaker
       @translation = options[:json]
       @omit = *options[:omit]
       @array = options[:array] == true
+      @required = options[:required].to_s.downcase.eql?('true')
     end
 
     def array?
@@ -49,7 +50,7 @@ module FakerMaker
     end
 
     def assert_valid_options( options )
-      options.assert_valid_keys :has, :array, :json, :omit
+      options.assert_valid_keys :has, :array, :json, :omit, :required
     end
   end
 end

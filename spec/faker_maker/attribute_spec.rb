@@ -54,4 +54,18 @@ RSpec.describe FakerMaker::Attribute do
     expect( attr.omit?(nil) ).to be true
     expect( attr.omit?('anything') ).to be false
   end
+
+  it 'can mark attributes as required' do
+    attr = FakerMaker::Attribute.new( :my_name, nil, required: true )
+    expect( attr.required ).to be true
+
+    attr = FakerMaker::Attribute.new( :my_name, nil, required: 'true' )
+    expect( attr.required ).to be true
+
+    attr = FakerMaker::Attribute.new( :my_name, nil, required: :true )
+    expect( attr.required ).to be true
+
+    attr = FakerMaker::Attribute.new( :my_name, nil, required: nil )
+    expect( attr.required ).to be false
+  end
 end

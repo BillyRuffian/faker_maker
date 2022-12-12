@@ -15,3 +15,4 @@ Gemfile.lock
 
 faker_maker-*.gem
 test.rb
+.idea
