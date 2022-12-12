@@ -4,7 +4,7 @@
 module FakerMaker
   # Factories construct instances of a fake
   class Factory
-    attr_reader :name, :class_name, :parent
+    attr_reader :name, :class_name, :parent, :attributes_to_be_removed
 
     def initialize( name, options = {} )
       assert_valid_options options
@@ -110,7 +110,9 @@ module FakerMaker
 
     def populate_instance( instance, attr_override_values )
       FakerMaker[parent].populate_instance instance, attr_override_values if parent?
-      @attributes.each do |attr|
+
+      attr = @chaos ? chaos_remove : @attributes
+      attr.each do |attr|
         value = value_for_attribute( instance, attr, attr_override_values )
         instance.send "#{attr.name}=", value
       end
@@ -160,7 +162,34 @@ module FakerMaker
     end
 
     def assert_valid_options( options )
-      options.assert_valid_keys :class, :parent, :naming
+      options.assert_valid_keys :class, :parent, :naming, :chaos
+    end
+
+    # Selects required @attributes
+    def required_attributes
+      @required_attributes ||= @attributes.select{ |attr| attr.required.eql? true }
+    end
+
+    # Selects optional @attributes
+    def optional_attributes
+      @optional_attributes ||= @attributes.select{ |attr| attr.required.eql? false }
+    end
+
+    # Randomly selects optional attributes
+    # Attributes removed from parent will also be removed from child
+    def chaos_remove
+      optional_attrs = optional_attributes.dup
+      @attributes_to_be_removed = parent? ? FakerMaker[parent].attributes_to_be_removed : []
+
+      optional_attrs = optional_attrs.reject { |attr| @attributes_to_be_removed.include? attr.name } unless @attributes_to_be_removed.empty?
+
+      if optional_attrs.size.positive?
+        rand(optional_attrs.size).times do
+          @attributes_to_be_removed << optional_attrs.delete_at(rand(optional_attrs.size)).name
+        end
+      end
+
+      optional_attrs.concat(required_attributes)
     end
   end
 end

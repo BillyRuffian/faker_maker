@@ -190,6 +190,14 @@ RSpec.describe FakerMaker::Factory do
     factory.build
   end
 
+  it 'can enable chaos mode' do
+    factory = FakerMaker::Factory.new( :h, naming: :json, chaos: true )
+    attr = FakerMaker::Attribute.new( :this_is_a_key, proc { 'sample' }, required: true )
+    factory.attach_attribute( attr )
+    FakerMaker.register_factory( factory )
+    expect { factory.build }.not_to raise_error
+  end
+
   describe '#instance' do
     it 'returns the instance' do
       factory = FakerMaker::Factory.new( :factory )
