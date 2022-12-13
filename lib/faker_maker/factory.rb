@@ -4,7 +4,7 @@
 module FakerMaker
   # Factories construct instances of a fake
   class Factory
-    attr_reader :name, :class_name, :parent, :attributes_to_be_removed
+    attr_reader :name, :class_name, :parent, :chaos, :attributes_to_be_removed
 
     def initialize( name, options = {} )
       assert_valid_options options
@@ -23,6 +23,7 @@ module FakerMaker
       @attributes = []
       @klass = nil
       @parent = options[:parent]
+      @chaos = options[:chaos].to_s.downcase.eql?('true')
     end
 
     def parent_class
@@ -181,10 +182,12 @@ module FakerMaker
       optional_attrs = optional_attributes.dup
       @attributes_to_be_removed = parent? ? FakerMaker[parent].attributes_to_be_removed : []
 
-      optional_attrs = optional_attrs.reject { |attr| @attributes_to_be_removed.include? attr.name } unless @attributes_to_be_removed.empty?
+      if @attributes_to_be_removed.present?
+        optional_attrs = optional_attrs.reject { |attr| @attributes_to_be_removed.include? attr.name }
+      end
 
       if optional_attrs.size.positive?
-        rand(optional_attrs.size).times do
+        rand(0..optional_attrs.size).times do
           @attributes_to_be_removed << optional_attrs.delete_at(rand(optional_attrs.size)).name
         end
       end
