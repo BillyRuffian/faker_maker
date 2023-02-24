@@ -1,9 +1,10 @@
 # frozen_string_literal: true
+require 'pry'
 
 module FakerMaker
   # Attributes describe the fields of classes
   class Attribute
-    attr_reader :name, :block, :translation, :required
+    attr_reader :name, :block, :translation, :required, :optional, :optional_weighting
 
     def initialize( name, block = nil, options = {} )
       assert_valid_options options
@@ -13,7 +14,13 @@ module FakerMaker
       @translation = options[:json]
       @omit = *options[:omit]
       @array = options[:array] == true
-      @required = options[:required].to_s.downcase.eql?('true')
+
+      if options[:required].to_s.downcase.eql?('true')
+        @required = true
+      else
+        @optional = true
+        @optional_weighting = [Integer, Float].include?(options[:optional].class) ? options[:optional] : 0.5
+      end
     end
 
     def array?
@@ -27,6 +34,20 @@ module FakerMaker
         @cardinality
       end
     end
+
+    # def optional
+    #   if [Integer, Float].include? @optional.class
+    #     Random.rand < @optional
+    #   elsif @optional.nil? && @required.nil?
+    #     true
+    #   else
+    #     @optional.to_s.downcase.eql?('true')
+    #   end
+    # end
+
+    # def optional?
+    #   @optional == true ? 0.5 : @optional
+    # end
 
     def translation?
       !@translation.blank?
@@ -50,7 +71,7 @@ module FakerMaker
     end
 
     def assert_valid_options( options )
-      options.assert_valid_keys :has, :array, :json, :omit, :required
+      options.assert_valid_keys :has, :array, :json, :omit, :required, :optional
     end
   end
 end
