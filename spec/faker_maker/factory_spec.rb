@@ -190,12 +190,84 @@ RSpec.describe FakerMaker::Factory do
     factory.build
   end
 
-  it 'can enable chaos mode' do
-    factory = FakerMaker::Factory.new( :h, naming: :json, chaos: true )
-    attr = FakerMaker::Attribute.new( :this_is_a_key, proc { 'sample' }, required: true )
+  # it 'can enable chaos mode' do
+  #   factory = FakerMaker::Factory.new( :h, naming: :json, chaos: true )
+  #   attr = FakerMaker::Attribute.new( :this_is_a_key, proc { 'sample' }, required: true )
+  #   factory.attach_attribute( attr )
+  #   FakerMaker.register_factory( factory )
+  #   expect { factory.build }.not_to raise_error
+  # end
+
+  it 'overrides attribute values using keyword argument \'attributes:\' in build method' do
+    factory = FakerMaker::Factory.new( :example_factory )
+    attr = FakerMaker::Attribute.new( :example_attribute, proc { 'sample' } )
     factory.attach_attribute( attr )
     FakerMaker.register_factory( factory )
-    expect { factory.build }.not_to raise_error
+
+    fake = factory.build( attributes: { example_attribute: 'override' } )
+
+    expect( fake.example_attribute ).to eq 'override'
+  end
+
+  describe 'chaos mode' do
+    it 'can be enabled' do
+      factory = FakerMaker::Factory.new( :example_factory )
+      attr = FakerMaker::Attribute.new( :example_attribute, proc { 'sample' } )
+      factory.attach_attribute( attr )
+      FakerMaker.register_factory( factory )
+
+      expect { factory.build( chaos: true ) }.not_to raise_error
+    end
+
+    it 'required fields are always present when in chaos mode' do
+      factory = FakerMaker::Factory.new( :example_factory )
+      required_attribute = FakerMaker::Attribute.new( :required_attribute, proc { 'required' }, required: true )
+      optional_attribute = FakerMaker::Attribute.new( :optional_attribute, proc { 'optional' }, required: false )
+      factory.attach_attribute( required_attribute )
+      factory.attach_attribute( optional_attribute )
+      FakerMaker.register_factory( factory )
+
+      fakes = []
+      10.times do
+        fakes << factory.build( chaos: true )
+      end
+
+      fakes.each { |fake| expect(fake.required_attribute).to be_present }
+      expect(fakes.map { |fake| fake.optional_attribute }).to include nil
+    end
+
+    it 'allows specific attributes to be passed -- other optional attributes are treated as required' do
+      factory = FakerMaker::Factory.new( :example_factory )
+      required_attribute = FakerMaker::Attribute.new( :required_attribute, proc { 'required' }, required: true )
+      optional_attribute = FakerMaker::Attribute.new( :optional_attribute, proc { 'optional' }, required: false )
+      optional_attribute_two = FakerMaker::Attribute.new( :optional_attribute_two, proc { 'optional' }, required: false )
+      factory.attach_attribute( required_attribute )
+      factory.attach_attribute( optional_attribute )
+      factory.attach_attribute( optional_attribute_two )
+      FakerMaker.register_factory( factory )
+
+      fakes = []
+      10.times do
+        fakes << factory.build( chaos: %i[optional_attribute] )
+      end
+
+      fakes.each do |fake|
+        expect(fake.required_attribute).to be_present
+        expect(fake.optional_attribute_two).to be_present
+      end
+      expect(fakes.map { |fake| fake.optional_attribute }).to include nil
+    end
+
+    it 'errors when you pass a required attribute' do
+      factory = FakerMaker::Factory.new( :example_factory )
+      required_attribute = FakerMaker::Attribute.new( :required_attribute, proc { 'required' }, required: true )
+      optional_attribute = FakerMaker::Attribute.new( :optional_attribute, proc { 'optional' }, required: false )
+      factory.attach_attribute( required_attribute )
+      factory.attach_attribute( optional_attribute )
+      FakerMaker.register_factory( factory )
+
+      expect { factory.build( chaos: %i[required_attribute] ) }.to raise_error(FakerMaker::ChaosConflictingAttributeError)
+    end
   end
 
   describe '#instance' do
