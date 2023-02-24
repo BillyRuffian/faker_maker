@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-require 'pry'
 
 module FakerMaker
   # Attributes describe the fields of classes
@@ -34,20 +33,6 @@ module FakerMaker
         @cardinality
       end
     end
-
-    # def optional
-    #   if [Integer, Float].include? @optional.class
-    #     Random.rand < @optional
-    #   elsif @optional.nil? && @required.nil?
-    #     true
-    #   else
-    #     @optional.to_s.downcase.eql?('true')
-    #   end
-    # end
-
-    # def optional?
-    #   @optional == true ? 0.5 : @optional
-    # end
 
     def translation?
       !@translation.blank?

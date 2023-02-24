@@ -226,8 +226,7 @@ module FakerMaker
     def chaos_select( chaos_attrs = [] )
       selected_attrs = []
       optional_attrs = optional_attributes.dup
-
-
+      
       # Filter specific optional attributes if present
       if chaos_attrs.is_a?(Array) && chaos_attrs.size.positive?
         optional_attrs, selected_attrs = optional_attrs.partition { |attr| chaos_attrs.include?(attr.name) }
@@ -235,7 +234,7 @@ module FakerMaker
 
       # Grab parent selected attributes
       @chaos_selected_attributes = parent? ? FakerMaker[parent].chaos_selected_attributes : []
-      selected_inherited_attr = optional_attrs.select{ |attr|  @chaos_selected_attributes.map{ |attrs| attrs.name}.include? attr.name }
+      selected_inherited_attr = optional_attrs.select{ |attr|  @chaos_selected_attributes.map(&:name).include? attr.name }
 
       # Select optional attributes based on weighting
       optional_attrs.each do |optional_attr|
