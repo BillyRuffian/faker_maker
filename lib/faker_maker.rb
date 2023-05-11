@@ -5,7 +5,9 @@ require 'active_support/core_ext/hash'
 require 'active_support/core_ext/object/json'
 require 'active_support/core_ext/string'
 require 'faker_maker/attribute'
+require 'faker_maker/auditable'
 require 'faker_maker/base'
+require 'faker_maker/configuration'
 require 'faker_maker/lifecycle_hooks'
 require 'faker_maker/definition_proxy'
 require 'faker_maker/factory'
@@ -18,6 +20,7 @@ require 'faker_maker/version'
 # FakerMaker module for generating Fakes
 module FakerMaker
   extend FakerMaker::Base
+  extend FakerMaker::Configurable
 
   class Error < StandardError; end
   class NoSuchFactoryError < StandardError; end

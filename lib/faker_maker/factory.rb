@@ -4,6 +4,7 @@
 module FakerMaker
   # Factories construct instances of a fake
   class Factory
+    include Auditable
     attr_reader :name, :class_name, :parent
 
     def initialize( name, options = {} )
@@ -47,6 +48,7 @@ module FakerMaker
       assert_only_known_attributes_for_override( attributes )
       populate_instance instance, attributes
       yield instance if block_given?
+      audit(@instance) if FakerMaker.configuration.audit?
       after_build if respond_to? :after_build
       instance
     end
