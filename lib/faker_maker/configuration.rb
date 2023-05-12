@@ -1,5 +1,7 @@
-module FakerMaker
+# frozen_string_literal: true
 
+# FakerMaker module for generating Fakes
+module FakerMaker
   # Configuration class, holds all the config options for FM
   class Configuration
     attr_writer :audit
@@ -17,7 +19,6 @@ module FakerMaker
 
   # Mixin to provide configuraton methods to an extending or implementing class
   module Configurable
-    
     def configuration
       @configuration ||= Configuration.new
     end
@@ -29,6 +30,5 @@ module FakerMaker
     def configure
       yield(configuration) if block_given?
     end
-
   end
 end

@@ -4,10 +4,6 @@ require 'simplecov'
 require 'coveralls'
 Coveralls.wear!
 
-SimpleCov.start do
-  add_filter '/spec/'
-end
-
 require 'bundler/setup'
 require 'faker_maker'
 require 'faker'
