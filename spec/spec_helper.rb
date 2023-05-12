@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require 'simplecov'
-require 'coveralls'
-Coveralls.wear!
-
 require 'bundler/setup'
 require 'faker_maker'
 require 'faker'
