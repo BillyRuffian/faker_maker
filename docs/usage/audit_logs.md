@@ -22,3 +22,26 @@ FakerMaker.configure do |config|
 end
 ```
 
+## Audit streams
+
+Immediately after each object is built and after the post-build hooks have completed, the instance details will be logged in line-delimited JSON (JSONL), to the stream or file. Each line is contained in an envelope containing the following metadata:
+
+* The timestamp at the time of logging
+* The name of factory
+* The class name of the object the factory instantiated
+
+For example, given the factory:
+
+```ruby
+FakerMaker.factory :user do 
+  name {'Patsy Stone'}
+  email {'patsy@fabulous.co.uk'}
+  admin {false}
+end
+```
+
+The audit log, on build, would look like:
+
+```
+{"timestamp":"2023-05-15T15:46:30+01:00","factory":"user","class":"User","body":{"name":"Patsy Stone","email":"patsy@fabulous.co.uk","admin":false}}
+```
