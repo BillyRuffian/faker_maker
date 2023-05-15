@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'time'
+
 require 'active_support'
 require 'active_support/core_ext/hash'
 require 'active_support/core_ext/object/json'
