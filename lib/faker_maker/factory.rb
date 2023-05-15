@@ -4,6 +4,7 @@
 module FakerMaker
   # Factories construct instances of a fake
   class Factory
+    include Auditable
     attr_reader :name, :class_name, :parent
 
     def initialize( name, options = {} )
@@ -48,6 +49,7 @@ module FakerMaker
       populate_instance instance, attributes
       yield instance if block_given?
       after_build if respond_to? :after_build
+      audit(@instance) if FakerMaker.configuration.audit?
       instance
     end
 

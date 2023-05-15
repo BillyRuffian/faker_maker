@@ -44,3 +44,6 @@ Metrics/MethodLength:
 
 Lint/MissingSuper:
   Enabled: false
+
+AllCops:
+  NewCops: enable

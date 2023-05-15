@@ -151,7 +151,7 @@ RSpec.describe FakerMaker::Factory do
 
   it 'generates JSON and omits attributes' do
     factory = FakerMaker::Factory.new( :g )
-    attr = FakerMaker::Attribute.new( :sample, proc { nil }, omit: :nil )
+    attr = FakerMaker::Attribute.new( :sample, proc {}, omit: :nil )
     factory.attach_attribute( attr )
     FakerMaker.register_factory( factory )
 
