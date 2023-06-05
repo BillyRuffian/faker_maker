@@ -44,7 +44,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'activesupport', '>= 5.2', '< 8'
 
   spec.add_development_dependency 'bundler',       '~> 2.0'
-  spec.add_development_dependency 'faker',         '~> 2.1'
+  spec.add_development_dependency 'faker',         '~> 3.2'
   spec.add_development_dependency 'guard',         '~> 2.16'
   spec.add_development_dependency 'guard-bundler', '~> 3.0'
   spec.add_development_dependency 'guard-rubocop', '~> 1.3'
@@ -53,8 +53,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake',          '~> 13.0'
   spec.add_development_dependency 'rspec',         '~> 3.8'
   spec.add_development_dependency 'rubocop',       '~> 1.0'
-  spec.add_development_dependency 'simplecov',     '~> 0.16'
-  spec.add_development_dependency 'coveralls',     '~> 0.8'
 
-  spec.required_ruby_version = '>= 2.6'
+  spec.required_ruby_version = '>= 3.0'
 end
