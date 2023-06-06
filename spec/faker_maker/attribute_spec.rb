@@ -61,6 +61,12 @@ RSpec.describe FakerMaker::Attribute do
 
     attr = FakerMaker::Attribute.new( :my_name, nil, required: 'true' )
     expect( attr.required ).to be true
+
+    attr = FakerMaker::Attribute.new( :my_name, nil, optional: false )
+    expect( attr.required ).to be true
+
+    attr = FakerMaker::Attribute.new( :my_name, nil, optional: 'false' )
+    expect( attr.required ).to be true
   end
 
   it 'can mark attributes as optional' do
@@ -88,7 +94,12 @@ RSpec.describe FakerMaker::Attribute do
 
     attr = FakerMaker::Attribute.new( :my_name, nil, optional: 1)
     expect( attr.optional ).to be true
-    expect( attr.optional_weighting ).to be 1
+    expect( attr.optional_weighting ).to be 0.01
+    expect( attr.required ).to be_nil
+
+    attr = FakerMaker::Attribute.new( :my_name, nil, optional: 60)
+    expect( attr.optional ).to be true
+    expect( attr.optional_weighting ).to be 0.6
     expect( attr.required ).to be_nil
 
     attr = FakerMaker::Attribute.new( :my_name, nil, optional: 'blah')

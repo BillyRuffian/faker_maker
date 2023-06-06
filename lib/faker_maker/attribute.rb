@@ -5,6 +5,8 @@ module FakerMaker
   class Attribute
     attr_reader :name, :block, :translation, :required, :optional, :optional_weighting
 
+    DEFAULT_OPTIONAL_WEIGHTING = 0.5
+
     def initialize( name, block = nil, options = {} )
       assert_valid_options options
       @name = name
@@ -14,11 +16,11 @@ module FakerMaker
       @omit = *options[:omit]
       @array = options[:array] == true
 
-      if options[:required].to_s.downcase.eql?('true')
+      if options[:required].to_s.downcase.eql?('true') || options[:optional].to_s.downcase.eql?('false')
         @required = true
       else
         @optional = true
-        @optional_weighting = [Integer, Float].include?(options[:optional].class) ? options[:optional] : 0.5
+        @optional_weighting = determine_optional_weighting(options[:optional])
       end
     end
 
@@ -57,6 +59,17 @@ module FakerMaker
 
     def assert_valid_options( options )
       options.assert_valid_keys :has, :array, :json, :omit, :required, :optional
+    end
+
+    def determine_optional_weighting( value )
+      case value
+      when Float
+        value.between?(0,1) ? value : (value/100)
+      when Integer
+        value.ceil.between?(0,100) ? (value.to_f/100) : DEFAULT_OPTIONAL_WEIGHTING
+      else
+        DEFAULT_OPTIONAL_WEIGHTING
+      end
     end
   end
 end
