@@ -22,9 +22,8 @@ FM.factory :item, naming: :json do
   name { 'Blanket' }
   price(required: true) { 100 }
   description(optional: true) { 'Keeps you warm and cozy' }
-  manufacturer(optional: 0.7) { 'Apple' }
+  manufacturer(optional: 0.7) { 'A large fruit company' }
 end
-
 ```
 
 You can state an attribute is optional using the `optional` option set to either be a `Boolean`, `Integer` or a `Float`. 

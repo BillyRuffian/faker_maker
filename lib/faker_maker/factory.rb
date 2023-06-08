@@ -43,11 +43,8 @@ module FakerMaker
     end
 
     def build( attributes: {}, chaos: false, **kwargs )
-      unless kwargs.empty?
-        warn '[DEPRECATION] `build(attribute)` is deprecated.  Please use `build(attributes: {})` instead.'
-        attributes = kwargs
-      end
-      
+      validate_deprecated_build(kwargs) unless kwargs.empty?
+
       @instance = nil
       before_build if respond_to? :before_build
       assert_only_known_attributes_for_override( attributes )
@@ -129,11 +126,11 @@ module FakerMaker
     def populate_instance( instance, attr_override_values, chaos )
       FakerMaker[parent].populate_instance instance, attr_override_values, chaos if parent?
 
-      attr = chaos ? chaos_select(chaos) : @attributes
+      attributes = chaos ? chaos_select(chaos) : @attributes
 
-      attr.each do |attr|
-        value = value_for_attribute( instance, attr, attr_override_values )
-        instance.send "#{attr.name}=", value
+      attributes.each do |attribute|
+        value = value_for_attribute( instance, attribute, attr_override_values )
+        instance.send "#{attribute.name}=", value
       end
       instance.instance_variable_set( :@fm_factory, self )
     end
@@ -228,7 +225,7 @@ module FakerMaker
     def chaos_select( chaos_attrs = [] )
       selected_attrs = []
       optional_attrs = optional_attributes.dup
-      
+
       # Filter specific optional attributes if present
       if chaos_attrs.is_a?(Array) && chaos_attrs.size.positive?
         optional_attrs, selected_attrs = optional_attrs.partition { |attr| chaos_attrs.include?(attr.name) }
@@ -236,7 +233,9 @@ module FakerMaker
 
       # Grab parent selected attributes
       @chaos_selected_attributes = parent? ? FakerMaker[parent].chaos_selected_attributes : []
-      selected_inherited_attr = optional_attrs.select{ |attr|  @chaos_selected_attributes.map(&:name).include? attr.name }
+      selected_inherited_attr = optional_attrs.select do |attr|
+        @chaos_selected_attributes.map(&:name).include? attr.name
+      end
 
       # Select optional attributes based on weighting
       optional_attrs.each do |optional_attr|
@@ -246,6 +245,13 @@ module FakerMaker
       # Concat required, selected and parent attributes
       @chaos_selected_attributes.concat(required_attributes).concat(selected_inherited_attr).concat(selected_attrs).uniq!
       @chaos_selected_attributes
+    end
+
+    def validate_deprecated_build(kwargs)
+      usage = kwargs.each_with_object([]) { |kwarg, result| result << "#{kwarg.first}: #{kwarg.last}" }.join(', ')
+
+      warn "[DEPRECATION] `FM[:#{name}].build(#{usage})` is deprecated. " \
+           "Please use `FM[:#{name}].build(attributes: { #{usage} })` instead."
     end
   end
 end

@@ -225,14 +225,16 @@ RSpec.describe FakerMaker::Factory do
       end
 
       fakes.each { |fake| expect(fake.required_attribute).to be_present }
-      expect(fakes.map { |fake| fake.optional_attribute }).to include nil
+      expect(fakes.map(&:optional_attribute)).to include nil
     end
 
     it 'allows specific attributes to be passed -- other optional attributes are treated as required' do
       factory = FakerMaker::Factory.new( :example_factory )
       required_attribute = FakerMaker::Attribute.new( :required_attribute, proc { 'required' }, required: true )
       optional_attribute = FakerMaker::Attribute.new( :optional_attribute, proc { 'optional' }, required: false )
-      optional_attribute_two = FakerMaker::Attribute.new( :optional_attribute_two, proc { 'optional' }, required: false )
+      optional_attribute_two = FakerMaker::Attribute.new( :optional_attribute_two, proc {
+                                                                                     'optional'
+                                                                                   }, required: false )
       factory.attach_attribute( required_attribute )
       factory.attach_attribute( optional_attribute )
       factory.attach_attribute( optional_attribute_two )
@@ -247,7 +249,7 @@ RSpec.describe FakerMaker::Factory do
         expect(fake.required_attribute).to be_present
         expect(fake.optional_attribute_two).to be_present
       end
-      expect(fakes.map { |fake| fake.optional_attribute }).to include nil
+      expect(fakes.map(&:optional_attribute)).to include nil
     end
 
     it 'errors when you pass a required attribute' do
@@ -258,7 +260,9 @@ RSpec.describe FakerMaker::Factory do
       factory.attach_attribute( optional_attribute )
       FakerMaker.register_factory( factory )
 
-      expect { factory.build( chaos: %i[required_attribute] ) }.to raise_error(FakerMaker::ChaosConflictingAttributeError)
+      expect do
+        factory.build( chaos: %i[required_attribute] )
+      end.to raise_error(FakerMaker::ChaosConflictingAttributeError)
     end
   end
 

@@ -64,9 +64,9 @@ module FakerMaker
     def determine_optional_weighting( value )
       case value
       when Float
-        value.between?(0,1) ? value : (value/100)
+        value.between?(0, 1) ? value : (value / 100)
       when Integer
-        value.ceil.between?(0,100) ? (value.to_f/100) : DEFAULT_OPTIONAL_WEIGHTING
+        value.ceil.between?(0, 100) ? (value.to_f / 100) : DEFAULT_OPTIONAL_WEIGHTING
       else
         DEFAULT_OPTIONAL_WEIGHTING
       end
