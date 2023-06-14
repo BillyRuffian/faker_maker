@@ -43,7 +43,10 @@ module FakerMaker
     end
 
     def build( attributes: {}, chaos: false, **kwargs )
-      validate_deprecated_build(kwargs) unless kwargs.empty?
+      if kwargs.present?
+        validate_deprecated_build(kwargs)
+        attributes = kwargs
+      end
 
       @instance = nil
       before_build if respond_to? :before_build
