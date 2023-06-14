@@ -115,11 +115,6 @@ module FakerMaker
       collection | @attributes
     end
 
-    # def chaos_selected_attributes( collection = [] )
-    #   collection |= FakerMaker[parent].chaos_selected_attributes( collection ) if parent?
-    #   collection | @chaos_selected_attributes
-    # end
-
     def find_attribute( name = '' )
       attributes.filter { |a| [a.name, a.translation, @naming_strategy&.name(a.name)].include? name }.first
     end
