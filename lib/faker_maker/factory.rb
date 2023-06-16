@@ -237,7 +237,7 @@ module FakerMaker
 
       # Select optional attributes based on weighting
       optional_attrs.each do |optional_attr|
-        selected_attrs.push(optional_attr) if Random.rand > optional_attr.optional_weighting
+        selected_attrs.push(optional_attr) if Random.rand < optional_attr.optional_weighting
       end
 
       # Concat required, selected and parent attributes
