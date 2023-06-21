@@ -27,6 +27,7 @@ module FakerMaker
   class Error < StandardError; end
   class NoSuchFactoryError < StandardError; end
   class NoSuchAttributeError < StandardError; end
+  class ChaosConflictingAttributeError < StandardError; end
   class NoSuchAttributeNamingStrategy < StandardError; end
   # Your code goes here...
 

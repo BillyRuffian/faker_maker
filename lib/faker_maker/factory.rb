@@ -5,7 +5,7 @@ module FakerMaker
   # Factories construct instances of a fake
   class Factory
     include Auditable
-    attr_reader :name, :class_name, :parent
+    attr_reader :name, :class_name, :parent, :chaos_selected_attributes
 
     def initialize( name, options = {} )
       assert_valid_options options
@@ -19,7 +19,7 @@ module FakerMaker
                          when nil
                            nil
                          else
-                           raise FakerMaker::NoSuchAttributeNamingStrategy, opttions[:naming]
+                           raise FakerMaker::NoSuchAttributeNamingStrategy, options[:naming]
                          end
       @attributes = []
       @klass = nil
@@ -42,11 +42,22 @@ module FakerMaker
       @instance ||= instantiate
     end
 
-    def build( attributes = {} )
+    def build( attributes: {}, chaos: false, **kwargs )
+      if kwargs.present?
+        validate_deprecated_build(kwargs)
+        attributes = kwargs
+      end
+
       @instance = nil
       before_build if respond_to? :before_build
       assert_only_known_attributes_for_override( attributes )
-      populate_instance instance, attributes
+
+      assert_chaos_options chaos if chaos
+
+      optional_attributes
+      required_attributes
+
+      populate_instance instance, attributes, chaos
       yield instance if block_given?
       after_build if respond_to? :after_build
       audit(@instance) if FakerMaker.configuration.audit?
@@ -110,11 +121,14 @@ module FakerMaker
 
     protected
 
-    def populate_instance( instance, attr_override_values )
-      FakerMaker[parent].populate_instance instance, attr_override_values if parent?
-      @attributes.each do |attr|
-        value = value_for_attribute( instance, attr, attr_override_values )
-        instance.send "#{attr.name}=", value
+    def populate_instance( instance, attr_override_values, chaos )
+      FakerMaker[parent].populate_instance instance, attr_override_values, chaos if parent?
+
+      attributes = chaos ? chaos_select(chaos) : @attributes
+
+      attributes.each do |attribute|
+        value = value_for_attribute( instance, attribute, attr_override_values )
+        instance.send "#{attribute.name}=", value
       end
       instance.instance_variable_set( :@fm_factory, self )
     end
@@ -126,6 +140,19 @@ module FakerMaker
       issue = "Can't build an instance of '#{class_name}' " \
               "setting '#{unknown_attrs.join( ', ' )}', no such attribute(s)"
       raise FakerMaker::NoSuchAttributeError, issue unless unknown_attrs.empty?
+    end
+
+    def assert_only_known_and_optional_attributes_for_chaos( chaos_attr_values )
+      chaos_attr_values = chaos_attr_values.map(&:to_sym)
+      unknown_attrs = chaos_attr_values - attribute_names
+      issue = "Can't build an instance of '#{class_name}' " \
+              "setting '#{unknown_attrs.join( ', ' )}', no such attribute(s)"
+      raise FakerMaker::NoSuchAttributeError, issue unless unknown_attrs.empty?
+
+      # Are any chaos attributes marked as required?
+      conflicting_attributes = chaos_attr_values.select { |attr| required_attributes.map(&:name).include? attr }
+      issue = "Can't use chaos on a required attribute: '#{conflicting_attributes}'"
+      raise FakerMaker::ChaosConflictingAttributeError, issue unless conflicting_attributes.empty?
     end
 
     def attribute_hash_overridden_value?( attr, attr_override_values )
@@ -163,6 +190,68 @@ module FakerMaker
 
     def assert_valid_options( options )
       options.assert_valid_keys :class, :parent, :naming
+    end
+
+    # Asserts attributes passed in for chaos mode are valid
+    def assert_chaos_options( chaos )
+      eval = -> { [Array, String, TrueClass, FalseClass, Symbol].include? chaos.class }
+      msg = "chaos: arg does not support object of type: '#{chaos.class}'"
+      raise NoSuchAttributeError, msg unless eval.call
+
+      case chaos
+      when Array
+        assert_only_known_and_optional_attributes_for_chaos(chaos)
+      when String, Symbol
+        assert_only_known_and_optional_attributes_for_chaos([chaos])
+      end
+    end
+
+    # Selects required @attributes
+    def required_attributes
+      @required_attributes ||= @attributes.select { |attr| attr.required.eql? true }
+    end
+
+    # Selects optional @attributes
+    def optional_attributes
+      @optional_attributes ||= @attributes.select(&:optional)
+    end
+
+    # Randomly selects optional attributes
+    # Attributes selected from parent will also be selected for the child
+    # @param [Array || TrueClass] chaos_attrs
+    # @return [Array]
+    def chaos_select( chaos_attrs = [] )
+      selected_attrs = []
+      optional_attrs = optional_attributes.dup
+
+      # Filter specific optional attributes if present
+      if chaos_attrs.is_a?(Array) && chaos_attrs.size.positive?
+        optional_attrs, selected_attrs = optional_attrs.partition { |attr| chaos_attrs.include?(attr.name) }
+      end
+
+      # Grab parent selected attributes
+      @chaos_selected_attributes = parent? ? FakerMaker[parent].chaos_selected_attributes : []
+      selected_inherited_attr = optional_attrs.select do |attr|
+        @chaos_selected_attributes.map(&:name).include? attr.name
+      end
+
+      # Select optional attributes based on weighting
+      optional_attrs.each do |optional_attr|
+        selected_attrs.push(optional_attr) if Random.rand < optional_attr.optional_weighting
+      end
+
+      # Concat required, selected and parent attributes
+      @chaos_selected_attributes.concat(required_attributes)
+                                .concat(selected_inherited_attr)
+                                .concat(selected_attrs).uniq!
+      @chaos_selected_attributes
+    end
+
+    def validate_deprecated_build(kwargs)
+      usage = kwargs.each_with_object([]) { |kwarg, result| result << "#{kwarg.first}: #{kwarg.last}" }.join(', ')
+
+      warn "[DEPRECATION] `FM[:#{name}].build(#{usage})` is deprecated. " \
+           "Please use `FM[:#{name}].build(attributes: { #{usage} })` instead."
     end
   end
 end

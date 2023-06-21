@@ -54,4 +54,64 @@ RSpec.describe FakerMaker::Attribute do
     expect( attr.omit?(nil) ).to be true
     expect( attr.omit?('anything') ).to be false
   end
+
+  it 'can mark attributes as required' do
+    attr = FakerMaker::Attribute.new( :my_name, nil, required: true )
+    expect( attr.required ).to be true
+
+    attr = FakerMaker::Attribute.new( :my_name, nil, required: 'true' )
+    expect( attr.required ).to be true
+
+    attr = FakerMaker::Attribute.new( :my_name, nil, optional: false )
+    expect( attr.required ).to be true
+
+    attr = FakerMaker::Attribute.new( :my_name, nil, optional: 'false' )
+    expect( attr.required ).to be true
+  end
+
+  it 'can mark attributes as optional' do
+    attr = FakerMaker::Attribute.new( :my_name, nil, optional: true )
+    expect( attr.optional ).to be true
+    expect( attr.required ).to be_nil
+
+    attr = FakerMaker::Attribute.new( :my_name, nil, optional: 'true' )
+    expect( attr.optional ).to be true
+    expect( attr.required ).to be_nil
+  end
+
+  it 'marks attributes as optional with a weighting of 0.5 by default' do
+    attr = FakerMaker::Attribute.new( :my_name, nil)
+    expect( attr.optional ).to be true
+    expect( attr.optional_weighting ).to be 0.5
+    expect( attr.required ).to be_nil
+  end
+
+  it 'can override optional weighting' do
+    attr = FakerMaker::Attribute.new( :my_name, nil, optional: 0.1)
+    expect( attr.optional ).to be true
+    expect( attr.optional_weighting ).to be 0.1
+    expect( attr.required ).to be_nil
+
+    attr = FakerMaker::Attribute.new( :my_name, nil, optional: 1)
+    expect( attr.optional ).to be true
+    expect( attr.optional_weighting ).to be 0.01
+    expect( attr.required ).to be_nil
+
+    attr = FakerMaker::Attribute.new( :my_name, nil, optional: 60)
+    expect( attr.optional ).to be true
+    expect( attr.optional_weighting ).to be 0.6
+    expect( attr.required ).to be_nil
+
+    attr = FakerMaker::Attribute.new( :my_name, nil, optional: 'blah')
+    expect( attr.optional ).to be true
+    expect( attr.optional_weighting ).to be 0.5
+    expect( attr.required ).to be_nil
+  end
+
+  it 'ignores optional if both required and optional options are passed' do
+    attr = FakerMaker::Attribute.new( :my_name, nil, required: true, optional: true)
+    expect( attr.optional ).to be nil
+    expect( attr.optional_weighting ).to be nil
+    expect( attr.required ).to be true
+  end
 end
