@@ -45,5 +45,11 @@ Metrics/MethodLength:
 Lint/MissingSuper:
   Enabled: false
 
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Metrics/PerceivedComplexity:
+  Max: 10
+
 AllCops:
   NewCops: enable

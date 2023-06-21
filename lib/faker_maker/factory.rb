@@ -241,7 +241,9 @@ module FakerMaker
       end
 
       # Concat required, selected and parent attributes
-      @chaos_selected_attributes.concat(required_attributes).concat(selected_inherited_attr).concat(selected_attrs).uniq!
+      @chaos_selected_attributes.concat(required_attributes)
+                                .concat(selected_inherited_attr)
+                                .concat(selected_attrs).uniq!
       @chaos_selected_attributes
     end
 
