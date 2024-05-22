@@ -50,3 +50,14 @@ FakerMaker.factory :user, class: 'EmailUser' do
   admin {false}
 end
 ```
+
+Fields with no block (or reference to another factory) will be nil.
+
+```ruby
+FakerMaker.factory :request do 
+  body
+end
+
+FakerMaker[:request].build.body
+# => nil
+```
