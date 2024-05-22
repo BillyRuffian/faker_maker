@@ -6,9 +6,24 @@ RSpec.describe FakerMaker::Attribute do
     expect( attr.name ).to eq :my_name
   end
 
-  it 'has a block' do
+  it 'can have a block' do
     attr = FakerMaker::Attribute.new( :my_name, proc { 'block' } )
     expect( attr.block ).to be_a Proc
+  end
+
+  it 'can have no block' do
+    attr = FakerMaker::Attribute.new( :my_name, nil )
+    expect( attr.block ).to be_nil
+  end
+
+  it 'can reference an embedded factory' do
+    attr = FakerMaker::Attribute.new( :my_name, nil, factory: :my_factory )
+    expect( attr.embedded_factories ).to eq [:my_factory]
+  end
+
+  it 'can reference multiple embedded factories' do
+    attr = FakerMaker::Attribute.new( :my_name, nil, factory: %i[my_factory my_other_factory] )
+    expect( attr.embedded_factories ).to eq %i[my_factory my_other_factory]
   end
 
   it 'can have a JSON alias' do

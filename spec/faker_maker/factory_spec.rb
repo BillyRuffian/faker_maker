@@ -170,6 +170,21 @@ RSpec.describe FakerMaker::Factory do
     expect( fake.sample.count ).to eq 2
   end
 
+  it 'builds objects with attributes from embedded factories' do
+    embed = FakerMaker::Factory.new( :embedded )
+    attr = FakerMaker::Attribute.new( :sample, proc { 'sample' } )
+    embed.attach_attribute( attr )
+    FakerMaker.register_factory( embed )
+
+    factory = FakerMaker::Factory.new( :factory )
+    attr = FakerMaker::Attribute.new( :sample, nil, factory: %i[embedded] )
+    factory.attach_attribute( attr )
+    FakerMaker.register_factory( factory )
+
+    fake = factory.build
+    expect( fake.sample ).to be_a embed.assemble
+  end
+
   it 'calls the before hook' do
     factory = FakerMaker::Factory.new( :hook )
     proxy = FakerMaker::DefinitionProxy.new( factory )

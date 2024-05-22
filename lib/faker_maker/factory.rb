@@ -81,6 +81,7 @@ module FakerMaker
     def as_json(*_args)
       build.as_json
     end
+    alias to_h as_json
 
     def parent?
       !@parent.nil?
@@ -163,10 +164,26 @@ module FakerMaker
       if attribute_hash_overridden_value?( attr, attr_override_values )
         attr_override_values[attr.name]
       elsif attr.array?
-        [].tap { |a| attr.cardinality.times { a << instance.instance_eval(&attr.block) } }
+        [].tap do |a|
+          attr.cardinality.times do
+            manufacture = manufacture_from_embedded_factory( attr )
+            # if manufacture has been build and there is a block, instance_exec the block
+            # otherwise just add the manufacture to the array
+            a << (attr.block ? instance.instance_exec(manufacture, &attr.block) : manufacture)
+          end
+        end
       else
-        instance.instance_eval(&attr.block)
+        manufacture = manufacture_from_embedded_factory( attr )
+        attr.block ? instance.instance_exec(manufacture, &attr.block) : manufacture
       end
+    end
+
+    def manufacture_from_embedded_factory( attr )
+      # The name of the embedded factory randomly selected from the list of embedded factories.
+      embedded_factory_name = attr.embedded_factories.sample
+      # The object that is being manufactured by the factory.
+      # If an embedded factory name is provided, it builds the object using FakerMaker.
+      embedded_factory_name ? FakerMaker[embedded_factory_name].build : nil
     end
 
     def instantiate
@@ -186,6 +203,7 @@ module FakerMaker
           .transform_keys { |key| @fm_factory.json_key_map[key] || key }
           .filter { |key, value| !@fm_factory.find_attribute(key)&.omit?( value ) }
       end
+      @klass.alias_method :to_h, :as_json
     end
 
     def assert_valid_options( options )

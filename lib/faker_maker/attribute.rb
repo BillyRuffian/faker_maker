@@ -3,18 +3,19 @@
 module FakerMaker
   # Attributes describe the fields of classes
   class Attribute
-    attr_reader :name, :block, :translation, :required, :optional, :optional_weighting
+    attr_reader :name, :block, :translation, :required, :optional, :optional_weighting, :embedded_factories
 
     DEFAULT_OPTIONAL_WEIGHTING = 0.5
 
     def initialize( name, block = nil, options = {} )
       assert_valid_options options
       @name = name
-      @block = block || proc {}
+      @block = block || nil
       @cardinality = options[:has] || 1
       @translation = options[:json]
       @omit = *options[:omit]
       @array = options[:array] == true
+      @embedded_factories = *options[:factory]
 
       if options[:required].to_s.downcase.eql?('true') || options[:optional].to_s.downcase.eql?('false')
         @required = true
@@ -58,7 +59,7 @@ module FakerMaker
     end
 
     def assert_valid_options( options )
-      options.assert_valid_keys :has, :array, :json, :omit, :required, :optional
+      options.assert_valid_keys :has, :array, :json, :omit, :required, :optional, :factory
     end
 
     def determine_optional_weighting( value )
