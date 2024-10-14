@@ -1,0 +1,112 @@
+# main links
+main:
+  # - title: "Quick-Start Guide"
+    # url: https://mmistakes.github.io/minimal-mistakes/docs/quick-start-guide/
+  - title: "Documentation"
+    url: /docs/installing/
+  - title: "About"
+    url: /pages/about/
+  # - title: "About"
+  #   url: https://mmistakes.github.io/minimal-mistakes/about/
+  # - title: "Sample Posts"
+  #   url: /year-archive/
+  # - title: "Sample Collections"
+  #   url: /collection-archive/
+  # - title: "Sitemap"
+  #   url: /sitemap/
+
+sidebar:
+  - title: "Getting started"
+    children:
+      - title: "Installing"
+        url: /docs/installing/
+      - title: "Configuration"
+        url: /docs/configuration/
+      - title: "Running Chutney"
+        url: /docs/running/
+      - title: "Disabling rules"
+        url: /docs/disabling-rules/
+
+  - title: "Rules"
+    children:
+      - title: "Avoid full stops"
+        url: /docs/rules/avoid-full-stops/
+      - title: "Avoid outline for single example"
+        url: /docs/rules/avoid-outline-for-single-example/
+      - title: "Avoid scripting"
+        url: /docs/rules/avoid-scripting/
+      - title: "Avoid splat steps in background"
+        url: /docs/rules/avoid-splat-steps-in-background/
+      - title: "Avoid splat steps in scenarios"
+        url: /docs/rules/avoid-splat-steps-in-scenarios/
+      - title: "Avoid typographers' quotes"
+        url: /docs/rules/avoid-typographers-quotes/
+      - title: "Background does more than setup"
+        url: /docs/rules/background-does-more-than-setup/
+      - title: "Background requires multiple scenarios"
+        url: /docs/rules/background-requires-multiple-scenarios/
+      - title: "Bad scenario name"
+        url: /docs/rules/bad-scenario-name/
+      - title: "Empty feature file"
+        url: /docs/rules/empty-feature-file/
+      - title: "File name differs from feature name"
+        url: /docs/rules/file-name-differs-feature-name/
+      - title: "Givens after background"
+        url: /docs/rules/givens-after-background/
+      - title: "Inconsistent quoting"
+        url: /docs/rules/inconsistent-quoting/
+      - title: "Invalid step flow"
+        url: /docs/rules/invalid-step-flow/
+      - title: "Invalid file name"
+        url: /docs/rules/invalid-file-name/
+      - title: "Missing example name"
+        url: /docs/rules/missing-example-name/
+      - title: "Missing example table"
+        url: /docs/rules/missing-example-table/
+      - title: "Missing feature description"
+        url: /docs/rules/missing-feature-description/
+      - title: "Missing feature name"
+        url: /docs/rules/missing-feature-name/
+      - title: "Missing scenario name"
+        url: /docs/rules/missing-scenario-name/
+      - title: "Missing scenario outline"
+        url: /docs/rules/missing-scenario-outline/
+      - title: "Missing Test Action"
+        url: /docs/rules/missing-test-action/
+      - title: "Missing Test Verification"
+        url: /docs/rules/missing-test-verification/
+      - title: "Required tags start with"
+        url: /docs/rules/required-tags-start-with/
+      - title: "Same tag different case"
+        url: /docs/rules/same-tag-different-case/
+      - title: "Same tag for all scenarios"
+        url: /docs/rules/same-tag-for-all-scenarios/
+      - title: "Scenario names match"
+        url: /docs/rules/scenario-names-match/
+      - title: "Tag used multiple times"
+        url: /docs/rules/tag-used-multiple-times/
+      - title: "Too clumsy"
+        url: /docs/rules/too-clumsy/
+      - title: "Too long step"
+        url: /docs/rules/too-long-step/
+      - title: "Too many different tags"
+        url: /docs/rules/too-many-different-tags/
+      - title: "Too many steps"
+        url: /docs/rules/too-many-steps/
+      - title: "Too many tags"
+        url: /docs/rules/too-many-tags/
+      - title: "Unique scenario names"
+        url: /docs/rules/unique-scenario-names/
+      - title: "Unknown variable"
+        url: /docs/rules/unknown-variable/
+      - title: "Unused variable"
+        url: /docs/rules/unused-variable/
+      - title: "Use background"
+        url: /docs/rules/use-background/
+      - title: "Use outline"
+        url: /docs/rules/use-outline/
+
+  - title: "Advanced"
+    children:
+      - title: "Language server"
+        url: /docs/language-server/
