@@ -12,6 +12,11 @@ RSpec.describe FakerMaker do
     expect( FakerMaker[factory.name] ).to eq factory
   end
 
+  it 'warns if a factory is already registered' do
+    FakerMaker.register_factory(factory)
+    expect { FakerMaker.register_factory(factory) }.to output( /Factory 'placeholder' already registered/ ).to_stderr
+  end
+
   it 'builds objects from a factory' do
     FakerMaker.register_factory(factory)
     expect( FakerMaker.build( :placeholder ) ).to be_a Placeholder

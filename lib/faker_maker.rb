@@ -34,6 +34,7 @@ module FakerMaker
   module_function
 
   def register_factory( factory )
+    warn "Factory '#{factory.name}' already registered" if factories[factory.name]
     factory.assemble
     factories[factory.name] = factory
   end
