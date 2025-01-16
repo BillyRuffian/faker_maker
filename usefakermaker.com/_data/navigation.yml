@@ -27,10 +27,10 @@ sidebar:
     children:
       - title: "Getting started"
         url: /docs/usage/getting-started/
-      - title: "Avoid outline for single example"
-        url: /docs/rules/avoid-outline-for-single-example/
-      - title: "Avoid scripting"
-        url: /docs/rules/avoid-scripting/
+      - title: "Inheritance"
+        url: /docs/usage/inheritance/
+      - title: "Arrays"
+        url: /docs/usage/arrays/
       - title: "Avoid splat steps in background"
         url: /docs/rules/avoid-splat-steps-in-background/
       - title: "Avoid splat steps in scenarios"
