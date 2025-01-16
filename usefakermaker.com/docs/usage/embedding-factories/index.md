@@ -66,4 +66,4 @@ FakerMaker.factory :basket do
 end
 ```
 
-With this pattern, you might have to [manage your dependencies]({% link usage/dependencies.md %}) and `require` your referenced factory.
+With this pattern, you might have to [manage your dependencies](../managing-dependencies/) and `require` your referenced factory.
