@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: single
 title: Installing Faker Maker
 nav_order: 2
 ---
