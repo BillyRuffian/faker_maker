@@ -29,11 +29,23 @@ sidebar:
         url: /docs/usage/getting-started/
       - title: "Building instances"
         url: /docs/usage/building-instances/
+      - title: "Arrays"
+        url: /docs/usage/arrays/
+      - title: "Omitting fields"
+        url: /docs/usage/omitting-fields/
       - title: "JSON field names"
         url: /docs/usage/json-field-names/
       - title: "Inheritance"
         url: /docs/usage/inheritance/
-      - title: "Arrays"
-        url: /docs/usage/arrays/
+      - title: "Embedding factories"
+        url: /docs/usage/embedding-factories/
+      - title: "Chaos"
+        url: /docs/usage/chaos/
+      - title: "Lifecycle hooks"
+        url: /docs/usage/lifecycle-hooks/
+      - title: "Destroying factories"
+        url: /docs/usage/destroying-factories/
       - title: "Managing dependencies"
         url: /docs/usage/managing-dependencies/
+      - title: "History logging"
+        url: /docs/usage/history-logging/
