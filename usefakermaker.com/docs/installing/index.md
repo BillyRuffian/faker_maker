@@ -4,8 +4,6 @@ title: Installing Faker Maker
 nav_order: 2
 ---
 
-# Installation
-
 Add this line to your application's Gemfile:
 
 ```ruby

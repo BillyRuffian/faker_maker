@@ -1,7 +1,7 @@
 # main links
 main:
   # - title: "Quick-Start Guide"
-    # url: https://mmistakes.github.io/minimal-mistakes/docs/quick-start-guide/
+  # url: https://mmistakes.github.io/minimal-mistakes/docs/quick-start-guide/
   - title: "Documentation"
     url: /docs/installing/
   - title: "About"
@@ -20,17 +20,13 @@ sidebar:
     children:
       - title: "Installing"
         url: /docs/installing/
-      - title: "Configuration"
-        url: /docs/configuration/
-      - title: "Running Chutney"
-        url: /docs/running/
-      - title: "Disabling rules"
-        url: /docs/disabling-rules/
+      - title: "Contributing"
+        url: /docs/contributing/
 
-  - title: "Rules"
+  - title: "Usage"
     children:
-      - title: "Avoid full stops"
-        url: /docs/rules/avoid-full-stops/
+      - title: "Getting started"
+        url: /docs/usage/getting-started/
       - title: "Avoid outline for single example"
         url: /docs/rules/avoid-outline-for-single-example/
       - title: "Avoid scripting"
