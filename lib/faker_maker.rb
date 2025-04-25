@@ -63,7 +63,7 @@ module FakerMaker
     return unless factory
 
     factories[name] = nil
-    Object.send( :remove_const, factory.class_name )
+    FakerMaker::Factory.send( :remove_const, factory.class_name )
   end
 
   def shut_all!

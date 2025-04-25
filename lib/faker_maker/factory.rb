@@ -28,7 +28,7 @@ module FakerMaker
 
     def parent_class
       if @parent
-        Object.const_get( FakerMaker[@parent].class_name )
+        FakerMaker::Factory.const_get( FakerMaker[@parent].class_name )
       else
         Object
       end
@@ -67,7 +67,7 @@ module FakerMaker
     def assemble
       if @klass.nil?
         @klass = Class.new parent_class
-        Object.const_set @class_name, @klass
+        FakerMaker::Factory.const_set @class_name, @klass
         attach_attributes_to_class
         attach_json_overrides_to_class
       end
