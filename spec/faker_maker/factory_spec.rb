@@ -43,7 +43,7 @@ RSpec.describe FakerMaker::Factory do
     child_attributes.each { |a| child.attach_attribute( a ) }
     FakerMaker.register_factory( child )
 
-    fake = Child.new
+    fake = FakerMaker::Factory::Child.new
 
     expect( fake ).to respond_to( :date )
     expect( fake ).to respond_to( :title )

@@ -1,7 +1,7 @@
 Layout/SpaceInsideParens:
   Enabled: false
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 120
 
 Metrics/ModuleLength:
@@ -32,7 +32,7 @@ Style/HashEachMethods:
 
 Style/HashTransformKeys:
   Enabled: true
- 
+
 Style/HashTransformValues:
   Enabled: true
 
