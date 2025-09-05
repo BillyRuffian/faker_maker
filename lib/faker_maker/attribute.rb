@@ -3,7 +3,7 @@
 module FakerMaker
   # Attributes describe the fields of classes
   class Attribute
-    attr_reader :name, :block, :translation, :required, :optional, :optional_weighting, :embedded_factories
+    attr_reader :name, :block, :translation, :required, :optional, :optional_weighting
 
     DEFAULT_OPTIONAL_WEIGHTING = 0.5
 
@@ -23,6 +23,11 @@ module FakerMaker
         @optional = true
         @optional_weighting = determine_optional_weighting(options[:optional])
       end
+    end
+
+    # Return an array of factory instances
+    def embedded_factories
+      @embedded_factories.map { |name| FakerMaker[name] }
     end
 
     def array?

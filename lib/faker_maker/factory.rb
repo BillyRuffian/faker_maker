@@ -5,6 +5,7 @@ module FakerMaker
   # Factories construct instances of a fake
   class Factory
     include Auditable
+
     attr_reader :name, :class_name, :parent, :chaos_selected_attributes
 
     def initialize( name, options = {} )
@@ -106,14 +107,20 @@ module FakerMaker
       @json_key_map
     end
 
+    ## HERE -- TODO -- reevaluate this method
     def attribute_names( collection = [] )
       collection |= FakerMaker[parent].attribute_names( collection ) if parent?
       collection | @attributes.map( &:name )
     end
 
+    ## embedded factories, if plural, does not imply they are instantiated
     def attributes( collection = [] )
       collection |= FakerMaker[parent].attributes( collection ) if parent?
-      collection | @attributes
+      collection |= @attributes.reject { |attr| attr.embedded_factories.any? }
+      @attributes.select { |attr| attr.embedded_factories.any? }.each do |attr|
+        collection << { attr.name => attr.embedded_factories.flat_map(&:attributes) }
+      end
+      collection
     end
 
     def find_attribute( name = '' )

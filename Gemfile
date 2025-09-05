@@ -10,3 +10,5 @@ gemspec
 gem 'bundler-audit', '~> 0.9.2'
 gem 'irb', '~> 1.15'
 gem 'rdoc', '~> 6.13'
+
+gem "awesome_print", "~> 1.9"
