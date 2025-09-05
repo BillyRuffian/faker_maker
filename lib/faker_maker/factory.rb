@@ -108,9 +108,14 @@ module FakerMaker
     end
 
     ## HERE -- TODO -- reevaluate this method
-    def attribute_names( collection = [] )
-      collection |= FakerMaker[parent].attribute_names( collection ) if parent?
-      collection | @attributes.map( &:name )
+    def attribute_names(flatten: false)
+      attributes.map do |entry|
+        if entry.is_a?(Hash)
+
+        else
+          entry.name
+        end
+      end
     end
 
     ## embedded factories, if plural, does not imply they are instantiated
@@ -187,10 +192,10 @@ module FakerMaker
 
     def manufacture_from_embedded_factory( attr )
       # The name of the embedded factory randomly selected from the list of embedded factories.
-      embedded_factory_name = attr.embedded_factories.sample
+      embedded_factory = attr.embedded_factories.sample
       # The object that is being manufactured by the factory.
       # If an embedded factory name is provided, it builds the object using FakerMaker.
-      embedded_factory_name ? FakerMaker[embedded_factory_name].build : nil
+      embedded_factory ? embedded_factory.build : nil
     end
 
     def instantiate
