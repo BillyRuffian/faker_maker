@@ -108,7 +108,7 @@ module FakerMaker
     end
 
     ## HERE -- TODO -- reevaluate this method
-    def attribute_names(flatten: false)
+    def attribute_names
       attributes.map do |entry|
         if entry.is_a?(Hash)
 
@@ -123,7 +123,7 @@ module FakerMaker
       collection |= FakerMaker[parent].attributes( collection ) if parent?
       collection |= @attributes.reject { |attr| attr.embedded_factories.any? }
       @attributes.select { |attr| attr.embedded_factories.any? }.each do |attr|
-        collection << { attr.name => attr.embedded_factories.flat_map(&:attributes) }
+        collection << { attr => attr.embedded_factories.flat_map(&:attributes) }
       end
       collection
     end
@@ -195,7 +195,7 @@ module FakerMaker
       embedded_factory = attr.embedded_factories.sample
       # The object that is being manufactured by the factory.
       # If an embedded factory name is provided, it builds the object using FakerMaker.
-      embedded_factory ? embedded_factory.build : nil
+      embedded_factory&.build
     end
 
     def instantiate
