@@ -17,13 +17,17 @@ RSpec.describe FakerMaker::Attribute do
   end
 
   it 'can reference an embedded factory' do
+    FakerMaker::Factory.new(:my_factory).then { |f| FakerMaker.register_factory(f) }
+
     attr = FakerMaker::Attribute.new( :my_name, nil, factory: :my_factory )
-    expect( attr.embedded_factories ).to eq [:my_factory]
+    expect( attr.embedded_factories ).to eq [FakerMaker[:my_factory]]
   end
 
   it 'can reference multiple embedded factories' do
+    FakerMaker::Factory.new(:my_factory).then { |f| FakerMaker.register_factory(f) }
+    FakerMaker::Factory.new(:my_other_factory).then { |f| FakerMaker.register_factory(f) }
     attr = FakerMaker::Attribute.new( :my_name, nil, factory: %i[my_factory my_other_factory] )
-    expect( attr.embedded_factories ).to eq %i[my_factory my_other_factory]
+    expect( attr.embedded_factories ).to eq [FakerMaker[:my_factory], FakerMaker[:my_other_factory]]
   end
 
   it 'can have a JSON alias' do

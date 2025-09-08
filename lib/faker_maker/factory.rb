@@ -107,15 +107,18 @@ module FakerMaker
       @json_key_map
     end
 
-    ## HERE -- TODO -- reevaluate this method
+    ## Recursively transforms attributes to names, handling nested hashes.
     def attribute_names
-      attributes.map do |entry|
-        if entry.is_a?(Hash)
-
-        else
-          entry.name
+      transform = lambda do |arr|
+        arr.map do |item|
+          if item.is_a?(Hash)
+            item.transform_keys { |k| k.name }.transform_values { |v| transform.call(v) }
+          else
+            item.name
+          end
         end
       end
+      transform.call(attributes)
     end
 
     ## embedded factories, if plural, does not imply they are instantiated
