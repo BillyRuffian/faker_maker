@@ -30,6 +30,10 @@ module FakerMaker
       @embedded_factories.map { |name| FakerMaker[name] }
     end
 
+    def embedded_factories?
+      @embedded_factories.any?
+    end
+
     def array?
       forced_array? || @array
     end
