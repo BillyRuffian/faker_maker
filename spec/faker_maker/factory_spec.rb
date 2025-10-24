@@ -68,7 +68,7 @@ RSpec.describe FakerMaker::Factory do
     factory.attach_attribute( attr2 )
     FakerMaker.register_factory( factory )
 
-    sample = factory.build( second: 'overridden' )
+    sample = factory.build( attributes: { second: 'overridden' } )
     expect( sample.first ).to eq 'sample'
     expect( sample.second ).to eq 'overridden'
   end
@@ -84,7 +84,7 @@ RSpec.describe FakerMaker::Factory do
     child_attributes.each { |a| child.attach_attribute( a ) }
     FakerMaker.register_factory( child )
 
-    fake = child.build( author: 'Teresa Greene', title: 'A Title' )
+    fake = child.build( attributes: { author: 'Teresa Greene', title: 'A Title' } )
     expect( fake.author ).to eq 'Teresa Greene'
     expect( fake.title ).to eq 'A Title'
   end
@@ -95,7 +95,7 @@ RSpec.describe FakerMaker::Factory do
     factory.attach_attribute( attr1 )
     FakerMaker.register_factory( factory )
 
-    sample = factory.build( first: nil )
+    sample = factory.build( attributes: { first: nil } )
     expect( sample.first ).to be nil
   end
 
