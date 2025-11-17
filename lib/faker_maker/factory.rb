@@ -265,6 +265,15 @@ module FakerMaker
       attributes ||= {}
       # The name of the embedded factory randomly selected from the list of embedded factories.
       embedded_factory = attr.embedded_factories.sample
+
+      # filter out attributes for non-chosen embedded factories to avoid triggering
+      # the NoSuchAttribute exception
+      attributes = attr
+                   .embedded_factories
+                   .reject { |e| e == embedded_factory }
+                   .flat_map { |f| pp f.attributes.map(&:name) }
+                   .then { |excl| attributes.delete_if { |k, _v| excl.include?(k) } }
+
       # The object that is being manufactured by the factory.
       # If an embedded factory name is provided, it builds the object using FakerMaker.
       embedded_factory&.build(attributes:, chaos:)
