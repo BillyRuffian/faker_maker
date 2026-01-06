@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> - FakerMaker</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
+  <link rel="manifest" href="/favicons/site.webmanifest">
+  <link rel="shortcut icon" href="/favicons/favicon.ico">
+</head>
+<body>
+  <div class="layout">
+    <button class="menu-toggle" aria-label="Toggle navigation">
+      <span class="hamburger"></span>
+    </button>
+    <aside class="sidebar">
+      <a href="/" class="logo">FakerMaker</a>
+      <%= render 'nav' %>
+    </aside>
+    <div class="page-container">
+      <main class="main-content">
+        <%= content %>
+      </main>
+      <footer class="site-footer">
+        <p>&copy; 2026 FakerMaker</p>
+        <p>
+          <a href="https://github.com/BillyRuffian/faker_maker">GitHub</a> &bull;
+          <a href="https://usejackdaw.com">Documentation by Jackdaw</a>
+        </p>
+      </footer>
+    </div>
+    <div class="sidebar-overlay"></div>
+  </div>
+  <script>
+    document.querySelector('.menu-toggle').addEventListener('click', function() {
+      document.body.classList.toggle('sidebar-open');
+    });
+    document.querySelector('.sidebar-overlay').addEventListener('click', function() {
+      document.body.classList.remove('sidebar-open');
+    });
+  </script>
+</body>
+</html>
