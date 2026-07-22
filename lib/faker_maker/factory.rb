@@ -255,7 +255,7 @@ module FakerMaker
     end
 
     def value_for_attribute( instance, attr, attr_override_values, chaos: false )
-      if !attr.embedded_factories? && overridden_value?( attr, attr_override_values )
+      if overridden_value?( attr, attr_override_values ) && !attr_override_values[attr.name].is_a?( Hash )
         attr_override_values[attr.name]
       elsif attr.array?
         [].tap do |a|

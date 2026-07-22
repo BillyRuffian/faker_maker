@@ -374,6 +374,69 @@ RSpec.describe FakerMaker::Factory do
     end
   end
 
+  describe 'overriding embedded factory attributes' do
+    it 'allows FakerMaker::OMIT to be passed as an override for an embedded factory attribute' do
+      embed = FakerMaker::Factory.new( :override_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :street, proc { '123 High St' } ) )
+      embed.attach_attribute( FakerMaker::Attribute.new( :city, proc { 'Swansea' } ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :override_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :name, proc { 'Alice' } ) )
+      factory.attach_attribute( FakerMaker::Attribute.new( :address, nil, factory: :override_embed ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { address: FakerMaker::OMIT } )
+      expect( fake.address ).to eq FakerMaker::OMIT
+    end
+
+    it 'omits the embedded factory attribute from JSON when overridden with FakerMaker::OMIT' do
+      embed = FakerMaker::Factory.new( :override_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :street, proc { '123 High St' } ) )
+      embed.attach_attribute( FakerMaker::Attribute.new( :city, proc { 'Swansea' } ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :override_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :name, proc { 'Alice' } ) )
+      factory.attach_attribute( FakerMaker::Attribute.new( :address, nil, factory: :override_embed ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { address: FakerMaker::OMIT } )
+      expect( fake.as_json ).not_to have_key 'address'
+    end
+
+    it 'allows nil to be passed as an override for an embedded factory attribute' do
+      embed = FakerMaker::Factory.new( :override_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :street, proc { '123 High St' } ) )
+      embed.attach_attribute( FakerMaker::Attribute.new( :city, proc { 'Swansea' } ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :override_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :name, proc { 'Alice' } ) )
+      factory.attach_attribute( FakerMaker::Attribute.new( :address, nil, factory: :override_embed ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { address: nil } )
+      expect( fake.address ).to be_nil
+    end
+
+    it 'still passes Hash overrides through to the embedded factory' do
+      embed = FakerMaker::Factory.new( :override_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :street, proc { '123 High St' } ) )
+      embed.attach_attribute( FakerMaker::Attribute.new( :city, proc { 'Swansea' } ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :override_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :name, proc { 'Alice' } ) )
+      factory.attach_attribute( FakerMaker::Attribute.new( :address, nil, factory: :override_embed ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { address: { street: '456 Low Rd' } } )
+      expect( fake.address.street ).to eq '456 Low Rd'
+      expect( fake.address.city ).to eq 'Swansea'
+    end
+  end
+
   describe '#instance' do
     it 'returns the instance' do
       factory = FakerMaker::Factory.new( :factory )
