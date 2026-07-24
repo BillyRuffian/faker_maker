@@ -65,7 +65,7 @@ end
 This will build a object of the form (in its `as_json` guise):
 
 ```ruby
-{item: {name: "toothpaste", price: 0.99}, quantity: 10} 
+{item: {name: "toothpaste", price: 0.99}, quantity: 10}
 ```
 
 When it comes to overriding values at build time, a hash can be passed to set the nested values:
@@ -73,6 +73,8 @@ When it comes to overriding values at build time, a hash can be passed to set th
 ```ruby
 FM[:inventory].build( attributes: { item: { name: 'floor cleaner' } } )
 ```
+
+There is one exception to this. Passing in an empty Hash will always set the attribute to an empty Hash. This is by-design to support the testing of invalid message formats with JSON APIs.
 
 When you allow Faker Maker to make a choice of factory by giving it an array:
 

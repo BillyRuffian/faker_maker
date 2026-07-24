@@ -238,7 +238,7 @@ module FakerMaker
     def assert_only_known_and_optional_attributes_for_chaos( chaos_attr_values )
       chaos_attr_values = chaos_attr_values.map(&:to_sym)
       unknown_attrs = chaos_attr_values - attribute_names.flat_map do |item|
-        item.is_a?(Hash) ? item.keys : item
+        non_empty_hash?(item) ? item.keys : item
       end
       issue = "Can't build an instance of '#{class_name}' " \
               "setting '#{unknown_attrs.join( ', ' )}', no such attribute(s)"
@@ -255,7 +255,13 @@ module FakerMaker
     end
 
     def value_for_attribute( instance, attr, attr_override_values, chaos: false )
-      if overridden_value?( attr, attr_override_values ) && !attr_override_values[attr.name].is_a?( Hash )
+      # Note: This is a behaviour change on the 5.x branch
+      # If the attribute is overriden, that value will be supplied UNLESS
+      # - the value is a Hash, in which case FM will attempt to set nested parameters
+      # EXCEPT if the hash is empty, in which case the assumptions is that the user intends to always
+      # return an empty hash value
+      # binding.irb
+      if overridden_value?( attr, attr_override_values ) && !non_empty_hash?(attr_override_values[attr.name])
         attr_override_values[attr.name]
       elsif attr.array?
         [].tap do |a|
@@ -339,6 +345,12 @@ module FakerMaker
     # Selects optional @attributes
     def optional_attributes
       @optional_attributes ||= @attributes.select(&:optional)
+    end
+
+    # Return true is the item is a Hash object and it is non-empty.
+    # Convenience method to improve readability elsewhere
+    def non_empty_hash?(item)
+      item.is_a?(Hash) && !item.empty?
     end
 
     # Randomly selects optional attributes
