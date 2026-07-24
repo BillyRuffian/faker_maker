@@ -66,7 +66,6 @@ module FakerMaker
       @instance = nil
       before_build if respond_to? :before_build
 
-      # TODO: make this cleverer to handle nested attributes
       assert_only_known_attributes_for_override( attributes )
 
       assert_chaos_options chaos if chaos
@@ -260,7 +259,6 @@ module FakerMaker
       # - the value is a Hash, in which case FM will attempt to set nested parameters
       # EXCEPT if the hash is empty, in which case the assumptions is that the user intends to always
       # return an empty hash value
-      # binding.irb
       if overridden_value?( attr, attr_override_values ) && !non_empty_hash?(attr_override_values[attr.name])
         attr_override_values[attr.name]
       elsif attr.array?
@@ -281,10 +279,15 @@ module FakerMaker
     def manufacture_from_embedded_factory( attr, attributes = {}, chaos: false )
       attributes ||= {}
       # The name of the embedded factory randomly selected from the list of embedded factories.
-      embedded_factory = attr.embedded_factories.sample
+      embedded_factory = select_embedded_factory_or_sample(attr, attributes)
+
+      if !embedded_factory && !attr.embedded_factories.empty?
+        raise NoSuchFactoryError, "Unable to match given attributes to an embedded factory. Atributes: #{attributes.keys}"
+      end
 
       # filter out attributes for non-chosen embedded factories to avoid triggering
       # the NoSuchAttribute exception
+      # NBT: I think the next pipeline is redundant
       attributes = attr
                    .embedded_factories
                    .reject { |e| e == embedded_factory }
@@ -297,6 +300,23 @@ module FakerMaker
       # behaviour without receiving attribute names meant for the parent.
       embedded_chaos = chaos.is_a?(Array) || chaos.is_a?(String) || chaos.is_a?(Symbol) ? true : chaos
       embedded_factory&.build(attributes:, chaos: embedded_chaos)
+    end
+
+    # Given an attribute, see if there are one or more factory embeddings to choose from.
+    # If there are more than one, examine the fields and select the most appropriate facotry
+    # otherwise return a random factory
+    def select_embedded_factory_or_sample(attr, attribute_overrides)
+      factory_options = attr.embedded_factories
+      return nil unless !factory_options&.empty?
+
+      factory_options.filter { |factory_option|
+        attribute_overrides
+          .keys
+          .all? { |attribute_name|
+            factory_option
+              .attributes(include_embeddings: false)
+              .map(&:name).include?(attribute_name) }
+      }.sample
     end
 
     def instantiate
