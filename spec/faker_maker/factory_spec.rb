@@ -435,6 +435,157 @@ RSpec.describe FakerMaker::Factory do
       expect( fake.address.street ).to eq '456 Low Rd'
       expect( fake.address.city ).to eq 'Swansea'
     end
+
+    it 'allows an empty Hash to be passed as an override, bypassing the embedded factory' do
+      embed = FakerMaker::Factory.new( :override_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :street, proc { '123 High St' } ) )
+      embed.attach_attribute( FakerMaker::Attribute.new( :city, proc { 'Swansea' } ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :override_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :name, proc { 'Alice' } ) )
+      factory.attach_attribute( FakerMaker::Attribute.new( :address, nil, factory: :override_embed ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { address: {} } )
+      expect( fake.address ).to eq( {} )
+    end
+
+    it 'renders an empty Hash override as {} in JSON output' do
+      embed = FakerMaker::Factory.new( :override_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :street, proc { '123 High St' } ) )
+      embed.attach_attribute( FakerMaker::Attribute.new( :city, proc { 'Swansea' } ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :override_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :name, proc { 'Alice' } ) )
+      factory.attach_attribute( FakerMaker::Attribute.new( :address, nil, factory: :override_embed ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { address: {} } )
+      expect( fake.as_json[:address] ).to eq( {} )
+    end
+  end
+
+  describe 'selecting embedded factories based on overrides' do
+    it 'selects the factory whose attributes match the override keys' do
+      address = FakerMaker::Factory.new( :sel_address )
+      address.attach_attribute( FakerMaker::Attribute.new( :street, proc { '1 High St' } ) )
+      address.attach_attribute( FakerMaker::Attribute.new( :city, proc { 'London' } ) )
+      FakerMaker.register_factory( address )
+
+      billing = FakerMaker::Factory.new( :sel_billing )
+      billing.attach_attribute( FakerMaker::Attribute.new( :card_number, proc { '4111' } ) )
+      billing.attach_attribute( FakerMaker::Attribute.new( :expiry, proc { '12/30' } ) )
+      FakerMaker.register_factory( billing )
+
+      factory = FakerMaker::Factory.new( :sel_customer )
+      factory.attach_attribute( FakerMaker::Attribute.new( :name, proc { 'Alice' } ) )
+      factory.attach_attribute( FakerMaker::Attribute.new( :info, nil, factory: %i[sel_address sel_billing] ) )
+      FakerMaker.register_factory( factory )
+
+      20.times do
+        fake = factory.build( attributes: { info: { card_number: '9999' } } )
+        expect( fake.info ).to respond_to( :card_number )
+        expect( fake.info ).not_to respond_to( :street )
+        expect( fake.info.card_number ).to eq '9999'
+      end
+    end
+
+    it 'selects from among multiple matching factories' do
+      uk_addr = FakerMaker::Factory.new( :sel_uk_address )
+      uk_addr.attach_attribute( FakerMaker::Attribute.new( :street, proc { 'High St' } ) )
+      uk_addr.attach_attribute( FakerMaker::Attribute.new( :postcode, proc { 'SW1A 1AA' } ) )
+      FakerMaker.register_factory( uk_addr )
+
+      us_addr = FakerMaker::Factory.new( :sel_us_address )
+      us_addr.attach_attribute( FakerMaker::Attribute.new( :street, proc { 'Main St' } ) )
+      us_addr.attach_attribute( FakerMaker::Attribute.new( :zip_code, proc { '10001' } ) )
+      FakerMaker.register_factory( us_addr )
+
+      phone = FakerMaker::Factory.new( :sel_phone )
+      phone.attach_attribute( FakerMaker::Attribute.new( :number, proc { '555-0100' } ) )
+      FakerMaker.register_factory( phone )
+
+      factory = FakerMaker::Factory.new( :sel_contact )
+      factory.attach_attribute( FakerMaker::Attribute.new( :label, proc { 'home' } ) )
+      factory.attach_attribute( FakerMaker::Attribute.new( :detail, nil, factory: %i[sel_uk_address sel_us_address sel_phone] ) )
+      FakerMaker.register_factory( factory )
+
+      results = 30.times.map { factory.build( attributes: { detail: { street: '1 Elm Rd' } } ) }
+
+      results.each do |fake|
+        expect( fake.detail ).to respond_to( :street )
+        expect( fake.detail ).not_to respond_to( :number )
+      end
+      expect( results.any? { |f| f.detail.respond_to?( :postcode ) } ).to be true
+      expect( results.any? { |f| f.detail.respond_to?( :zip_code ) } ).to be true
+    end
+
+    it 'raises NoSuchFactoryError when overrides match no embedded factory' do
+      alpha = FakerMaker::Factory.new( :sel_alpha )
+      alpha.attach_attribute( FakerMaker::Attribute.new( :a_val, proc { 'a' } ) )
+      FakerMaker.register_factory( alpha )
+
+      beta = FakerMaker::Factory.new( :sel_beta )
+      beta.attach_attribute( FakerMaker::Attribute.new( :b_val, proc { 'b' } ) )
+      FakerMaker.register_factory( beta )
+
+      factory = FakerMaker::Factory.new( :sel_no_match )
+      factory.attach_attribute( FakerMaker::Attribute.new( :content, nil, factory: %i[sel_alpha sel_beta] ) )
+      FakerMaker.register_factory( factory )
+
+      expect { factory.build( attributes: { content: { unknown_key: 'x' } } ) }
+        .to raise_error( FakerMaker::NoSuchFactoryError, /Unable to match given attributes/ )
+    end
+
+    it 'randomly selects from all factories when no overrides are given' do
+      opt_x = FakerMaker::Factory.new( :sel_opt_x )
+      opt_x.attach_attribute( FakerMaker::Attribute.new( :x_val, proc { 'x' } ) )
+      FakerMaker.register_factory( opt_x )
+
+      opt_y = FakerMaker::Factory.new( :sel_opt_y )
+      opt_y.attach_attribute( FakerMaker::Attribute.new( :y_val, proc { 'y' } ) )
+      FakerMaker.register_factory( opt_y )
+
+      factory = FakerMaker::Factory.new( :sel_random_pick )
+      factory.attach_attribute( FakerMaker::Attribute.new( :choice, nil, factory: %i[sel_opt_x sel_opt_y] ) )
+      FakerMaker.register_factory( factory )
+
+      results = 30.times.map { factory.build }
+      expect( results.any? { |f| f.choice.respond_to?( :x_val ) } ).to be true
+      expect( results.any? { |f| f.choice.respond_to?( :y_val ) } ).to be true
+    end
+
+    it 'narrows to the single factory matching all override keys' do
+      broad = FakerMaker::Factory.new( :sel_broad )
+      broad.attach_attribute( FakerMaker::Attribute.new( :alpha, proc { 'a' } ) )
+      broad.attach_attribute( FakerMaker::Attribute.new( :beta, proc { 'b' } ) )
+      broad.attach_attribute( FakerMaker::Attribute.new( :gamma, proc { 'g' } ) )
+      FakerMaker.register_factory( broad )
+
+      narrow = FakerMaker::Factory.new( :sel_narrow )
+      narrow.attach_attribute( FakerMaker::Attribute.new( :alpha, proc { 'a' } ) )
+      narrow.attach_attribute( FakerMaker::Attribute.new( :beta, proc { 'b' } ) )
+      FakerMaker.register_factory( narrow )
+
+      other = FakerMaker::Factory.new( :sel_other )
+      other.attach_attribute( FakerMaker::Attribute.new( :delta, proc { 'd' } ) )
+      FakerMaker.register_factory( other )
+
+      factory = FakerMaker::Factory.new( :sel_multi_key )
+      factory.attach_attribute( FakerMaker::Attribute.new( :item, nil, factory: %i[sel_broad sel_narrow sel_other] ) )
+      FakerMaker.register_factory( factory )
+
+      20.times do
+        fake = factory.build( attributes: { item: { alpha: 'A', beta: 'B', gamma: 'G' } } )
+        expect( fake.item ).to respond_to( :gamma )
+        expect( fake.item ).not_to respond_to( :delta )
+        expect( fake.item.alpha ).to eq 'A'
+        expect( fake.item.beta ).to eq 'B'
+        expect( fake.item.gamma ).to eq 'G'
+      end
+    end
   end
 
   describe '#instance' do

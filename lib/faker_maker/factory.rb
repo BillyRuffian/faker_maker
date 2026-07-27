@@ -66,7 +66,6 @@ module FakerMaker
       @instance = nil
       before_build if respond_to? :before_build
 
-      # TODO: make this cleverer to handle nested attributes
       assert_only_known_attributes_for_override( attributes )
 
       assert_chaos_options chaos if chaos
@@ -238,7 +237,7 @@ module FakerMaker
     def assert_only_known_and_optional_attributes_for_chaos( chaos_attr_values )
       chaos_attr_values = chaos_attr_values.map(&:to_sym)
       unknown_attrs = chaos_attr_values - attribute_names.flat_map do |item|
-        item.is_a?(Hash) ? item.keys : item
+        non_empty_hash?(item) ? item.keys : item
       end
       issue = "Can't build an instance of '#{class_name}' " \
               "setting '#{unknown_attrs.join( ', ' )}', no such attribute(s)"
@@ -255,7 +254,12 @@ module FakerMaker
     end
 
     def value_for_attribute( instance, attr, attr_override_values, chaos: false )
-      if overridden_value?( attr, attr_override_values ) && !attr_override_values[attr.name].is_a?( Hash )
+      # Note: This is a behaviour change on the 5.x branch
+      # If the attribute is overriden, that value will be supplied UNLESS
+      # - the value is a Hash, in which case FM will attempt to set nested parameters
+      # EXCEPT if the hash is empty, in which case the assumptions is that the user intends to always
+      # return an empty hash value
+      if overridden_value?( attr, attr_override_values ) && !non_empty_hash?(attr_override_values[attr.name])
         attr_override_values[attr.name]
       elsif attr.array?
         [].tap do |a|
@@ -275,15 +279,11 @@ module FakerMaker
     def manufacture_from_embedded_factory( attr, attributes = {}, chaos: false )
       attributes ||= {}
       # The name of the embedded factory randomly selected from the list of embedded factories.
-      embedded_factory = attr.embedded_factories.sample
+      embedded_factory = select_embedded_factory_or_sample(attr, attributes)
 
-      # filter out attributes for non-chosen embedded factories to avoid triggering
-      # the NoSuchAttribute exception
-      attributes = attr
-                   .embedded_factories
-                   .reject { |e| e == embedded_factory }
-                   .flat_map { |f| f.attributes(include_embeddings: false).map(&:name) }
-                   .then { |excl| attributes.delete_if { |k, _v| excl.include?(k) } }
+      if !embedded_factory && !attr.embedded_factories.empty?
+        raise NoSuchFactoryError, "Unable to match given attributes to an embedded factory. Atributes: #{attributes.keys}"
+      end
 
       # The object that is being manufactured by the factory.
       # If an embedded factory name is provided, it builds the object using FakerMaker.
@@ -291,6 +291,23 @@ module FakerMaker
       # behaviour without receiving attribute names meant for the parent.
       embedded_chaos = chaos.is_a?(Array) || chaos.is_a?(String) || chaos.is_a?(Symbol) ? true : chaos
       embedded_factory&.build(attributes:, chaos: embedded_chaos)
+    end
+
+    # Given an attribute, see if there are one or more factory embeddings to choose from.
+    # If there are more than one, examine the fields and select the most appropriate facotry
+    # otherwise return a random factory
+    def select_embedded_factory_or_sample(attr, attribute_overrides)
+      factory_options = attr.embedded_factories
+      return nil unless !factory_options&.empty?
+
+      factory_options.filter { |factory_option|
+        attribute_overrides
+          .keys
+          .all? { |attribute_name|
+            factory_option
+              .attributes(include_embeddings: false)
+              .map(&:name).include?(attribute_name) }
+      }.sample
     end
 
     def instantiate
@@ -339,6 +356,12 @@ module FakerMaker
     # Selects optional @attributes
     def optional_attributes
       @optional_attributes ||= @attributes.select(&:optional)
+    end
+
+    # Return true is the item is a Hash object and it is non-empty.
+    # Convenience method to improve readability elsewhere
+    def non_empty_hash?(item)
+      item.is_a?(Hash) && !item.empty?
     end
 
     # Randomly selects optional attributes

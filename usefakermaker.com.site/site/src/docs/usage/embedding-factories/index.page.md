@@ -65,7 +65,7 @@ end
 This will build a object of the form (in its `as_json` guise):
 
 ```ruby
-{item: {name: "toothpaste", price: 0.99}, quantity: 10} 
+{item: {name: "toothpaste", price: 0.99}, quantity: 10}
 ```
 
 When it comes to overriding values at build time, a hash can be passed to set the nested values:
@@ -73,6 +73,8 @@ When it comes to overriding values at build time, a hash can be passed to set th
 ```ruby
 FM[:inventory].build( attributes: { item: { name: 'floor cleaner' } } )
 ```
+
+There is **one exception** to this. Passing in an empty Hash will always set the attribute to an empty Hash. This is by-design to support the testing of invalid message formats with JSON APIs.
 
 When you allow Faker Maker to make a choice of factory by giving it an array:
 
@@ -83,7 +85,9 @@ FakerMaker.factory :inventory do
 end
 ```
 
-...either the `item` or `coupon` fields could be added to each build of the `inventory` factory. Faker Maker will ignore any fields for the non-chosen factory if they are paseed in the overrides hash. This means that a `NoSuchAttribute` error will not be raised.
+...either the `item` or `coupon` fields could be added to each build of the `inventory` factory.
+
+**Since v5.0.3** when passing override values to `#build` and where the factory has a choice of embedded factory, as in the example above where an inventory may contain either an item or a coupon, Faker Maker will attempt to locate the embedded factory which most matches the values give in the override. For example, if the attributes given to build the `item` field most match `coupon` fields, that embedded factory will be chosen. If there are still several choices which match the given attributes, a random selection will be made.
 
 ## Alternative method
 
