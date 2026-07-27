@@ -285,15 +285,6 @@ module FakerMaker
         raise NoSuchFactoryError, "Unable to match given attributes to an embedded factory. Atributes: #{attributes.keys}"
       end
 
-      # filter out attributes for non-chosen embedded factories to avoid triggering
-      # the NoSuchAttribute exception
-      # NBT: I think the next pipeline is redundant
-      attributes = attr
-                   .embedded_factories
-                   .reject { |e| e == embedded_factory }
-                   .flat_map { |f| f.attributes(include_embeddings: false).map(&:name) }
-                   .then { |excl| attributes.delete_if { |k, _v| excl.include?(k) } }
-
       # The object that is being manufactured by the factory.
       # If an embedded factory name is provided, it builds the object using FakerMaker.
       # Chaos is converted to a boolean so that child factories inherit random chaos
