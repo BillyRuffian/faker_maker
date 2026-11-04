@@ -467,6 +467,292 @@ RSpec.describe FakerMaker::Factory do
     end
   end
 
+  describe 'overriding embedded factory array attributes' do
+    it 'manufactures one object for each item of an Array override' do
+      embed = FakerMaker::Factory.new( :array_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :street, proc { '123 High St' } ) )
+      embed.attach_attribute( FakerMaker::Attribute.new( :city, proc { 'Swansea' } ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :array_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :name, proc { 'Alice' } ) )
+      factory.attach_attribute( FakerMaker::Attribute.new( :addresses, nil, array: true, factory: :array_embed ) )
+      FakerMaker.register_factory( factory )
+
+      overrides = [{ street: '1 Low Rd' }, { street: '2 Low Rd', city: 'Carmarthen' }]
+      fake = factory.build( attributes: { addresses: overrides } )
+
+      expect( fake.addresses ).to all( be_a( embed.assemble ) )
+      expect( fake.addresses.map( &:street ) ).to eq ['1 Low Rd', '2 Low Rd']
+      expect( fake.addresses.map( &:city ) ).to eq %w[Swansea Carmarthen]
+    end
+
+    it 'manufactures no objects for an empty Array override' do
+      embed = FakerMaker::Factory.new( :array_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :street, proc { '123 High St' } ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :array_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :addresses, nil, array: true, factory: :array_embed ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { addresses: [] } )
+      expect( fake.addresses ).to eq []
+    end
+
+    it 'ignores the factory cardinality when an Array override is given' do
+      embed = FakerMaker::Factory.new( :array_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :city, proc { 'Swansea' } ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :array_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :addresses, nil, has: 2, factory: :array_embed ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { addresses: [{ city: 'a' }, { city: 'b' }, { city: 'c' }] } )
+      expect( fake.addresses.map( &:city ) ).to eq %w[a b c]
+    end
+
+    it 'renders manufactured objects in JSON using the embedded factory keys' do
+      embed = FakerMaker::Factory.new( :array_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :street, proc { '123 High St' }, json: 'streetName' ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :array_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :addresses, nil, array: true, factory: :array_embed ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { addresses: [{ street: '1 Low Rd' }] } )
+      address = fake.as_json[:addresses].first
+
+      expect( address ).to include( 'streetName' => '1 Low Rd' )
+      expect( address.keys ).not_to include( :street, 'street' )
+    end
+
+    it 'omits an item attribute overridden with FakerMaker::OMIT from JSON' do
+      embed = FakerMaker::Factory.new( :array_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :street, proc { '123 High St' }, omit: FakerMaker::OMIT ) )
+      embed.attach_attribute( FakerMaker::Attribute.new( :city, proc { 'Swansea' } ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :array_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :addresses, nil, array: true, factory: :array_embed ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { addresses: [{ street: FakerMaker::OMIT }] } )
+      address = fake.as_json[:addresses].first
+
+      expect( fake.addresses.first.street ).to eq FakerMaker::OMIT
+      expect( address ).not_to have_key( :street )
+      expect( address ).to have_key( :city )
+    end
+
+    it 'applies the attribute block to manufactured objects but not to items supplied as is' do
+      embed = FakerMaker::Factory.new( :array_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :city, proc { 'Swansea' } ) )
+      FakerMaker.register_factory( embed )
+
+      block = proc { |address| address.tap { |a| a.city = a.city.upcase } }
+      factory = FakerMaker::Factory.new( :array_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :addresses, block, array: true, factory: :array_embed ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { addresses: [{ city: 'Carmarthen' }, { city: 'Swansea' }, {}] } )
+
+      expect( fake.addresses.first( 2 ).map( &:city ) ).to eq %w[CARMARTHEN SWANSEA]
+      expect( fake.addresses.last ).to eq( {} )
+    end
+
+    it 'selects the matching embedded factory for each item' do
+      address = FakerMaker::Factory.new( :array_address )
+      address.attach_attribute( FakerMaker::Attribute.new( :street, proc { '1 High St' } ) )
+      FakerMaker.register_factory( address )
+
+      billing = FakerMaker::Factory.new( :array_billing )
+      billing.attach_attribute( FakerMaker::Attribute.new( :card_number, proc { '4111' } ) )
+      FakerMaker.register_factory( billing )
+
+      factory = FakerMaker::Factory.new( :array_parent )
+      embedded = %i[array_address array_billing]
+      factory.attach_attribute( FakerMaker::Attribute.new( :details, nil, array: true, factory: embedded ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { details: [{ street: '1 Low Rd' }, { card_number: '9999' }] } )
+
+      expect( fake.details.first ).to be_a address.assemble
+      expect( fake.details.last ).to be_a billing.assemble
+    end
+
+    it 'manufactures nested embedded arrays from Array overrides inside an item' do
+      item = FakerMaker::Factory.new( :array_item )
+      item.attach_attribute( FakerMaker::Attribute.new( :label, proc { 'default' }, json: 'itemLabel' ) )
+      FakerMaker.register_factory( item )
+
+      group = FakerMaker::Factory.new( :array_group )
+      group.attach_attribute( FakerMaker::Attribute.new( :items, nil, array: true, factory: :array_item ) )
+      FakerMaker.register_factory( group )
+
+      factory = FakerMaker::Factory.new( :array_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :groups, nil, array: true, factory: :array_group ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { groups: [{ items: [{ label: 'a' }, { label: 'b' }] }, { items: [] }] } )
+
+      expect( fake.groups.map { |g| g.items.count } ).to eq [2, 0]
+      expect( fake.groups.first.items.map( &:label ) ).to eq %w[a b]
+      expect( fake.as_json[:groups].first[:items].first ).to include( 'itemLabel' => 'a' )
+    end
+
+    it 'keeps an Array override in chaos mode while applying chaos to the manufactured objects' do
+      embed = FakerMaker::Factory.new( :array_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :street, proc { '123 High St' } ) )
+      embed.attach_attribute( FakerMaker::Attribute.new( :city, proc { 'Swansea' } ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :array_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :addresses, nil, array: true, factory: :array_embed ) )
+      FakerMaker.register_factory( factory )
+
+      fakes = []
+      10.times do
+        fakes << factory.build( attributes: { addresses: [{ street: 'a' }, { street: 'b' }] }, chaos: true )
+      end
+
+      fakes.each { |fake| expect( fake.addresses.map( &:street ) ).to eq %w[a b] }
+      expect( fakes.flat_map { |fake| fake.addresses.map( &:city ) } ).to include nil
+    end
+
+    it 'raises when an item override matches no embedded factory' do
+      embed = FakerMaker::Factory.new( :array_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :street, proc { '123 High St' } ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :array_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :addresses, nil, array: true, factory: :array_embed ) )
+      FakerMaker.register_factory( factory )
+
+      expect { factory.build( attributes: { addresses: [{ not_an_attribute: 'x' }] } ) }
+        .to raise_error( FakerMaker::NoSuchFactoryError, /Unable to match given attributes/ )
+    end
+
+    it 'supplies an empty Hash item as is' do
+      embed = FakerMaker::Factory.new( :array_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :street, proc { '123 High St' } ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :array_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :addresses, nil, array: true, factory: :array_embed ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { addresses: [{}] } )
+      expect( fake.addresses ).to eq [{}]
+    end
+
+    it 'supplies a nil item as is' do
+      embed = FakerMaker::Factory.new( :array_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :street, proc { '123 High St' } ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :array_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :addresses, nil, array: true, factory: :array_embed ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { addresses: [nil] } )
+      expect( fake.addresses ).to eq [nil]
+    end
+
+    it 'manufactures non-empty Hash items and supplies other items as is' do
+      embed = FakerMaker::Factory.new( :array_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :street, proc { '123 High St' } ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :array_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :addresses, nil, array: true, factory: :array_embed ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { addresses: [{ street: '1 Low Rd' }, {}, nil] } )
+
+      expect( fake.addresses.first ).to be_a embed.assemble
+      expect( fake.addresses.first.street ).to eq '1 Low Rd'
+      expect( fake.addresses.drop( 1 ) ).to eq [{}, nil]
+    end
+
+    it 'still manufactures the factory cardinality of objects when no override is given' do
+      embed = FakerMaker::Factory.new( :array_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :street, proc { '123 High St' } ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :array_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :addresses, nil, has: 2, factory: :array_embed ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build
+      expect( fake.addresses ).to all( be_a( embed.assemble ) )
+      expect( fake.addresses.count ).to eq 2
+    end
+
+    it 'still applies a non-empty Hash override to each object of the factory cardinality' do
+      embed = FakerMaker::Factory.new( :array_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :street, proc { '123 High St' } ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :array_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :addresses, nil, has: 2, factory: :array_embed ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { addresses: { street: '9 Hash Rd' } } )
+      expect( fake.addresses.map( &:street ) ).to eq ['9 Hash Rd', '9 Hash Rd']
+    end
+
+    it 'still passes nil through unchanged' do
+      embed = FakerMaker::Factory.new( :array_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :street, proc { '123 High St' } ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :array_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :addresses, nil, array: true, factory: :array_embed ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { addresses: nil } )
+      expect( fake.addresses ).to be_nil
+    end
+
+    it 'still passes FakerMaker::OMIT through unchanged' do
+      embed = FakerMaker::Factory.new( :array_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :street, proc { '123 High St' } ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :array_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :addresses, nil, array: true, factory: :array_embed ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { addresses: FakerMaker::OMIT } )
+      expect( fake.addresses ).to eq FakerMaker::OMIT
+    end
+
+    it 'still passes an Array override through verbatim when the attribute has no embedded factory' do
+      factory = FakerMaker::Factory.new( :array_scalar )
+      factory.attach_attribute( FakerMaker::Attribute.new( :tags, proc { 'tag' }, has: 2 ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { tags: [{ a: 1 }, 'b', nil] } )
+      expect( fake.tags ).to eq [{ a: 1 }, 'b', nil]
+    end
+
+    it 'still passes an Array override through verbatim when the embedded factory attribute is not an array' do
+      embed = FakerMaker::Factory.new( :array_embed )
+      embed.attach_attribute( FakerMaker::Attribute.new( :street, proc { '123 High St' } ) )
+      FakerMaker.register_factory( embed )
+
+      factory = FakerMaker::Factory.new( :array_parent )
+      factory.attach_attribute( FakerMaker::Attribute.new( :address, nil, factory: :array_embed ) )
+      FakerMaker.register_factory( factory )
+
+      fake = factory.build( attributes: { address: [{ street: '1 Low Rd' }] } )
+      expect( fake.address ).to eq [{ street: '1 Low Rd' }]
+    end
+  end
+
   describe 'selecting embedded factories based on overrides' do
     it 'selects the factory whose attributes match the override keys' do
       address = FakerMaker::Factory.new( :sel_address )

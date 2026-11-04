@@ -254,12 +254,18 @@ module FakerMaker
     end
 
     def value_for_attribute( instance, attr, attr_override_values, chaos: false )
-      # Note: This is a behaviour change on the 5.x branch
-      # If the attribute is overriden, that value will be supplied UNLESS
+      # NOTE: This is a behaviour change as of 5.x
+      # If the attribute is overridden, that value will be supplied UNLESS
       # - the value is a Hash, in which case FM will attempt to set nested parameters
-      # EXCEPT if the hash is empty, in which case the assumptions is that the user intends to always
-      # return an empty hash value
-      if overridden_value?( attr, attr_override_values ) && !non_empty_hash?(attr_override_values[attr.name])
+      #   EXCEPT if the Hash is empty, in which case the assumption is that the user intends to always
+      #   return an empty Hash value
+      # - the attribute is an array of embedded factories and the value is an Array, in which case FM
+      #   manufactures one object for each item, using the item as the override for that object
+      #   EXCEPT if the Array is empty, in which case nothing is manufactured
+      #   An item follows the same rules as a single embedded override, so an empty Hash item is supplied as is
+      if array_embedded_factory_override?( attr, attr_override_values )
+        manufacture_array_from_overrides( instance, attr, attr_override_values[attr.name], chaos: )
+      elsif overridden_value?( attr, attr_override_values ) && !non_empty_hash?(attr_override_values[attr.name])
         attr_override_values[attr.name]
       elsif attr.array?
         [].tap do |a|
@@ -276,13 +282,35 @@ module FakerMaker
       end
     end
 
+    # True when an Array override has been supplied for an embedded-factory array attribute.
+    # These overrides are handled item by item rather than as a single value.
+    def array_embedded_factory_override?( attr, attr_override_values )
+      overridden_value?( attr, attr_override_values ) &&
+        attr.array? &&
+        attr.embedded_factories? &&
+        attr_override_values[attr.name].is_a?( Array )
+    end
+
+    # Manufactures one object from the embedded factory for each item in the Array of overrides.
+    # Items follow the same rules as a single embedded override: a non-empty Hash is used as the
+    # overrides for the object, and anything else (such as nil or an empty Hash) is supplied
+    # as is, without running the attribute block. An empty Array yields no objects.
+    def manufacture_array_from_overrides( instance, attr, item_overrides, chaos: false )
+      item_overrides.map do |overrides|
+        next overrides unless non_empty_hash?( overrides )
+
+        manufacture = manufacture_from_embedded_factory( attr, overrides, chaos: )
+        attr.block ? instance.instance_exec( manufacture, &attr.block ) : manufacture
+      end
+    end
+
     def manufacture_from_embedded_factory( attr, attributes = {}, chaos: false )
       attributes ||= {}
       # The name of the embedded factory randomly selected from the list of embedded factories.
       embedded_factory = select_embedded_factory_or_sample(attr, attributes)
 
       if !embedded_factory && !attr.embedded_factories.empty?
-        raise NoSuchFactoryError, "Unable to match given attributes to an embedded factory. Atributes: #{attributes.keys}"
+        raise NoSuchFactoryError, "Unable to match given attributes to an embedded factory. Attributes: #{attributes.keys}"
       end
 
       # The object that is being manufactured by the factory.

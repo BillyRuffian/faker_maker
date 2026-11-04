@@ -89,6 +89,50 @@ end
 
 **Since v5.0.3** when passing override values to `#build` and where the factory has a choice of embedded factory, as in the example above where an inventory may contain either an item or a coupon, Faker Maker will attempt to locate the embedded factory which most matches the values give in the override. For example, if the attributes given to build the `item` field most match `coupon` fields, that embedded factory will be chosen. If there are still several choices which match the given attributes, a random selection will be made.
 
+## Overriding arrays of embedded factories
+
+When an embedded factory attribute is an Array:
+
+```ruby
+FakerMaker.factory :item do
+  name { Faker::Commerce.product_name }
+  price { Faker::Commerce.price }
+end
+
+FakerMaker.factory :basket do
+  items( has: 3, factory: :item )
+end
+```
+
+A Hash override is applied to every object that is built:
+
+```ruby
+FM[:basket].build( attributes: { items: { name: 'Electric Blanket' } } ).as_json
+=> {:items=>[{:name=>"Electric Blanket", :price=>94.33}, {:name=>"Electric Blanket", :price=>40.86}, {:name=>"Electric Blanket", :price=>93.73}]}
+```
+
+**Since v5.1.0** an Array can be passed instead. Faker Maker builds one object for each item in the Array, using the item as the overrides for that object. The number of objects comes from the Array, not from `has:`:
+
+```ruby
+FM[:basket].build( attributes: { items: [{ name: 'Electric Blanket' }, { name: 'Electric Sheep', price: 5.99 }] } ).as_json
+=> {:items=>[{:name=>"Electric Blanket", :price=>34.28}, {:name=>"Electric Sheep", :price=>5.99}]}
+```
+
+Each object is built by its embedded factory, so it uses that factory's JSON field names, `omit` options and (when enabled) Chaos, and anything the item does not set is generated as usual. When the factory has a choice of embedded factory, each item is matched separately.
+
+An item follows the same rules as a single embedded override:
+
+* A non-empty Hash is used as the overrides for the object that is built. An attribute which does not exist raises `NoSuchFactoryError`.
+* An empty Hash, `nil` or any other value is supplied as it is, and the attribute's block is not run for it. This supports testing invalid message formats, as with a single empty Hash override.
+* An empty Array builds no objects.
+
+```ruby
+FM[:basket].build( attributes: { items: [{ name: 'Electric Blanket' }, {}, nil] } ).as_json
+=> {:items=>[{:name=>"Electric Blanket", :price=>47.86}, {}, nil]}
+```
+
+An Array of values is still passed through untouched when the attribute has no embedded factory.
+
 ## Alternative method
 
 There is an alternative style which might be of use, **but** you have less control using build-time overrides for values (you can't set nested values). *This is no longer a recommended pattern*.

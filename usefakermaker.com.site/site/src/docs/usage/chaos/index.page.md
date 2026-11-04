@@ -48,3 +48,5 @@ result.name
 ```
 
 Even though `name` is optional and Chaos might otherwise remove it, explicitly overriding it guarantees it will be present with the value you specified.
+
+This also applies to arrays of embedded factories: an Array override is kept as given, and Chaos is still applied to the objects built from its items.

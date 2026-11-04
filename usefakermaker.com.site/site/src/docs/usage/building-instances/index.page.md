@@ -40,7 +40,7 @@ end
 
 then the value of `result.name` is 'Electric Sheep'.
 
-Beware when overriding values in this way: there is no type checking. You will get an exception if you try to set a value to an attribute that doesn't exist but you won't get one if you assign, say, an array of values where you would otherwise have a string and vice versa.
+Beware when overriding values in this way: there is no type checking. You will get an exception if you try to set a value to an attribute that doesn't exist but you won't get one if you assign, say, an array of values where you would otherwise have a string and vice versa. The exception is an array of embedded factories, where an Array of Hashes is built into objects (see [Embedding Factories](docs/usage/embedding-factories/)).
 
 Calling `result.to_json` will give a stringified JSON representation. Because ActiveSupport is used under the covers, `as_json` will give you a `Hash` rather than the stringified version.
 
